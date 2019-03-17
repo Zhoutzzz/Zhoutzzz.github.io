@@ -95,10 +95,10 @@
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排6.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排7.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code1.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code2.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code5.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code3.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code4.png">
-<meta property="og:updated_time" content="2019-03-17T20:13:02.994Z">
+<meta property="og:updated_time" content="2019-03-17T20:19:54.440Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法入门-快速排序">
 <meta name="twitter:description" content="之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。">
@@ -374,7 +374,7 @@
 <p>因为基准值在右边，所以我们左指针从左边开始遍历，寻找比基准值大的数，当我们找到后停下，开始用右指针从基准值左边寻找比基准值小的数。<br>但是右指针与左指针相遇之前都没有找到比基准值小的数，如果左右两个指针相遇且该值大于基准值，则交换基准值与该值的位置。<br><img src="/2019/03/17/算法入门-快速排序/快排3.png" alt="图片"></p>
 <p>交换位置后的情况<br><img src="/2019/03/17/算法入门-快速排序/快排4.png" alt="图片"></p>
 <p>此时基准值4将该序列分成两部分，左边的数均小于4，右边的均大于4。<br>因为分割后左边只有2个数，所以第二次比较时只用比较一次即可，右边｛9,6,37,5｝同样取头尾，这里偶数取6。<br>同样的排序换位后就变成这样<br><img src="/2019/03/17/算法入门-快速排序/快排5.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/快排6.png" alt="图片"><br>这时右边序列被拆成2部分，左边为5，右边为37，9。<br>依旧进行递归处理，得到最终结果。<br><img src="/2019/03/17/算法入门-快速排序/快排7.png" alt="图片"></p>
-<h2 id="代码展示"><a href="#代码展示" class="headerlink" title="代码展示"></a>代码展示</h2><p><img src="/2019/03/17/算法入门-快速排序/code1.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code2.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code3.png" alt="图片"><br>最后输出结果如下<br><img src="/2019/03/17/算法入门-快速排序/code4.png" alt="图片"></p>
+<h2 id="代码展示"><a href="#代码展示" class="headerlink" title="代码展示"></a>代码展示</h2><p><img src="/2019/03/17/算法入门-快速排序/code1.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code5.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code3.png" alt="图片"><br>最后输出结果如下<br><img src="/2019/03/17/算法入门-快速排序/code4.png" alt="图片"></p>
 <h1 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h1><p>这是用了3数取中法优化过的快排，平均时间复杂度为O(nlogn)，当然除此之外优化方法还有其他，比如根据拆分的序列长短结合插入排序使用等（这个方法我倒是还没写过，听说效率会更快，有时间去写一个对比下）。<br>快排的核心就在于基准值的选取，在遇到顺序未知的序列时，尽量想办法选择好基准值，保证快排的效率，不然可能会弄成冒泡的时间复杂度哦。</p>
 <p>一枚菜鸡Java Coder写的第一篇博客，如有做得不好的地方，欢迎指正。<br>作为一名刚入行的coder，写博客的时间虽然晚了些，不过有句话说得好，<em>种树最好的时候是10年前，其次就是现在</em>，所以抓紧时间学习，努力尝试养成写博客的习惯，对自己学过的东西能做一个复习、总结，也能为不了解的朋友解惑。<br>（想想未来还有未知的计算机专业毕业的学生要进入到这个行业，压力山大啊，不抓紧学习就要out了，在此也对业内所以人说一声：加油啊，各位。）</p>
 
