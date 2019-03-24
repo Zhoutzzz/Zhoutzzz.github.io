@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="算法，排序,">
 
 
 
@@ -79,17 +79,22 @@
 
 
 
-<meta name="description" content="一枚Java Coder的个人学习基地">
-<meta property="og:type" content="website">
-<meta property="og:title" content="标签">
-<meta property="og:url" content="https://zhoutzzz.github.io/tags/index.html">
+<meta name="description" content="之前写了第一篇之后，就打算写一个排序算法系列的文章，这个是第二篇，这个系列的文章会不定期更新。">
+<meta name="keywords" content="算法，排序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法-插入排序">
+<meta property="og:url" content="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="一枚Java Coder的个人学习基地">
+<meta property="og:description" content="之前写了第一篇之后，就打算写一个排序算法系列的文章，这个是第二篇，这个系列的文章会不定期更新。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-03-17T15:04:05.189Z">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/插排.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/插排1.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/插排2.png">
+<meta property="og:updated_time" content="2019-03-24T08:09:41.568Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="标签">
-<meta name="twitter:description" content="一枚Java Coder的个人学习基地">
+<meta name="twitter:title" content="算法-插入排序">
+<meta name="twitter:description" content="之前写了第一篇之后，就打算写一个排序算法系列的文章，这个是第二篇，这个系列的文章会不定期更新。">
+<meta name="twitter:image" content="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/插排.png">
 
 
 
@@ -119,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="https://zhoutzzz.github.io/tags/">
+  <link rel="canonical" href="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/">
 
 
 
 
 
-  <title>标签 | Z</title>
+  <title>算法-插入排序 | Z</title>
   
 
 
@@ -250,40 +255,214 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">标签</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                目前共计 1 个标签
-            </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/算法，排序/" style="font-size: 12px; color: #ccc">算法，排序</a>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">算法-插入排序</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-24T14:36:13+08:00">
+                2019-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法-排序/" itemprop="url" rel="index">
+                    <span itemprop="name">算法, 排序</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <p>之前写了第一篇之后，就打算写一个排序算法系列的文章，这个是第二篇，这个系列的文章会不定期更新。<br><a id="more"></a></p>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>先说下插入算法的思路，在一个序列中，一开始选择一个数temp，这个数是一个定位，如果temp左边序列中某一个元素比其大，则从该元素开始到temp前一个元素都向右移动一位，当temp遇到比其小的元素时，则temp放到该元素之后，假设temp左边的序列都比temp小，则temp位置不变，反之放到最前面。当这个temp与左边序列比较完之后，将temp向右移动一位继续与其左边序列进行比较。</p>
+<p>举个例子，一个便利店店员有一堆贴好价格标签的商品要按价格顺序摆放到一个空货架上，怎么摆呢，如果一个一个找价格来顺序摆是不是会很累，这时候用插入排序的思路来摆的话，就根本不用去找价格，只用随便拿一个放到第一个，再拿一个和放上去的比较下价格，价格比它大的都往右移，找到第一个不比它大的价格时就放到后面，以此类推，感觉是不是比一个一个找价格快多了呢。</p>
+<h1 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h1><p><img src="/2019/03/24/算法-插入排序/插排.png" alt="图片"><br><img src="/2019/03/24/算法-插入排序/插排1.png" alt="图片"><br><em>使用插入排序后的结果</em><br><img src="/2019/03/24/算法-插入排序/插排2.png" alt="图片"></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>插入排序的最坏时间复杂度为O(n^2)，最好为O(n)，当插入排序的序列是逆序时，插入第n个元素都要考虑前面的n-1个元素，数组有序的情况下只用考虑第n-1个元素，它是稳定的排序方法，相同元素的比较其相对位置不会改变，但是其只适用于数量较少的排序，如果数量太大其运算时间很长，在之前写的快排文章，还有一种优化方法就是当基准值某一边的序列中的元素较少且有序时可以直接使用插入排序。</p>
+
       
     </div>
     
     
     
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/03/24/算法-插入排序/">算法-插入排序</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Zhoutzzz 的个人博客">Zhoutzzz</a></p>
+  <p><span>发布时间:</span>2019年03月24日 - 14:03</p>
+  <p><span>最后更新:</span>2019年03月24日 - 16:03</p>
+  <p><span>原始链接:</span><a href="/2019/03/24/算法-插入排序/" title="算法-插入排序">https://zhoutzzz.github.io/2019/03/24/算法-插入排序/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法，排序/" rel="tag"><i class="fa fa-tag"></i> 算法，排序</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/17/算法入门-快速排序/" rel="next" title="算法入门-快速排序">
+                <i class="fa fa-chevron-left"></i> 算法入门-快速排序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -316,8 +495,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -395,6 +583,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码示例"><span class="nav-number">2.</span> <span class="nav-text">代码示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
