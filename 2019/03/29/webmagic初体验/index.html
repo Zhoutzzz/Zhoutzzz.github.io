@@ -92,7 +92,12 @@
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫3.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫4.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫5.png">
-<meta property="og:updated_time" content="2019-03-29T16:44:40.822Z">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫6.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫7.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫8.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫9.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫10.png">
+<meta property="og:updated_time" content="2019-04-03T14:11:41.368Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="webmagic初体验">
 <meta name="twitter:description" content="入职新公司没两天上头就下任务了，让我做个爬虫爬企业数据，用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
@@ -363,6 +368,9 @@
 <p>简单来说，webmagic的爬取工作会先把main方法里填的url对应的网页下载下来，然后在该网页中找到正则或xpath匹配的url，然后放入到page.addTargetRequests队列中，第一次的爬取工作是爬取在main方法中匹配的url，队列中的url每爬取到一条url会把当前url对应的网页下载下来，然后再通过process方法里面的判断逻辑把匹配的url放入队列中待爬。以此类推。<br>（好尴尬- -，语文学的差，暂时只想到这个解释，个人建议还是看文档动手去爬点东西会理解的更深）</p>
 <p>贴代码贴代码！！！<br>首先先在site定义头部<br><img src="/2019/03/29/webmagic初体验/爬虫2.png" alt="图片"><br>然后process方法写爬虫核心逻辑<br><img src="/2019/03/29/webmagic初体验/爬虫3.png" alt="图片"><br>运行！<br><img src="/2019/03/29/webmagic初体验/爬虫4.png" alt="图片"><br>先爬1000条数据作为测试。<br><img src="/2019/03/29/webmagic初体验/爬虫5.png" alt="图片"></p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>目前使用下来，感觉还是比较简单的，没有什么太复杂的地方，（老实说这代码逻辑写的我自己都看着感觉不好，后续改进了），至于webmagic里其他的一些功能之后再尝试，先彻底摸清楚他的工作流程/原理，到时候使用其他高级功能才顺手（嘿嘿）。</p>
+<hr>
+<p><center><font size="6"><strong>2019/4/3更新</strong></font></center></p>
+<h1 id="实现pipeline接口完成数据持久化"><a href="#实现pipeline接口完成数据持久化" class="headerlink" title="实现pipeline接口完成数据持久化"></a>实现pipeline接口完成数据持久化</h1><p>使用pipeline来对爬取到的数据的持久化工作，我是用的spring data jpa，用mybatis的话需要在Dao进行注解配置，相对麻烦。这里是把实现的pipeline作为service来进行数据处理。<br>因为开了4个线程去进行抓取，不加锁会有线程安全问题，使用了lock来实现加锁。<br><img src="/2019/03/29/webmagic初体验/爬虫6.png" alt="图片"><br>controller部分如果觉得同步的请求没返回不舒服可以新建一个线程做成异步。<br><img src="/2019/03/29/webmagic初体验/爬虫7.png" alt="图片"><br>请求后的情况如图<br><img src="/2019/03/29/webmagic初体验/爬虫8.png" alt="图片"><br><img src="/2019/03/29/webmagic初体验/爬虫9.png" alt="图片"><br><img src="/2019/03/29/webmagic初体验/爬虫10.png" alt="图片"></p>
 
       
     </div>
@@ -391,7 +399,7 @@
   <p><span>本文标题:</span><a href="/2019/03/29/webmagic初体验/">webmagic初体验</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Zhoutzzz 的个人博客">Zhoutzzz</a></p>
   <p><span>发布时间:</span>2019年03月29日 - 23:03</p>
-  <p><span>最后更新:</span>2019年03月30日 - 00:03</p>
+  <p><span>最后更新:</span>2019年04月03日 - 22:04</p>
   <p><span>原始链接:</span><a href="/2019/03/29/webmagic初体验/" title="webmagic初体验">https://zhoutzzz.github.io/2019/03/29/webmagic初体验/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/" aria-label="复制成功！"></i></span>
   </p>
@@ -604,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebMagic简单实现爬虫"><span class="nav-number">1.</span> <span class="nav-text">WebMagic简单实现爬虫</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebMagic简单实现爬虫"><span class="nav-number">1.</span> <span class="nav-text">WebMagic简单实现爬虫</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现pipeline接口完成数据持久化"><span class="nav-number">3.</span> <span class="nav-text">实现pipeline接口完成数据持久化</span></a></li></ol></div>
             
 
           </div>
