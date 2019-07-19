@@ -6,7 +6,7 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
+<head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="入职新公司没两天上头就下任务了，让我做个爬虫爬企业数据，用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
+<meta name="description" content="用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
 <meta name="keywords" content="webmagic,Java,爬虫">
 <meta property="og:type" content="article">
 <meta property="og:title" content="webmagic初体验">
 <meta property="og:url" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="入职新公司没两天上头就下任务了，让我做个爬虫爬企业数据，用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
+<meta property="og:description" content="用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫1.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫2.png">
@@ -97,10 +97,10 @@
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫8.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫9.png">
 <meta property="og:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫10.png">
-<meta property="og:updated_time" content="2019-04-03T14:11:41.368Z">
+<meta property="og:updated_time" content="2019-07-19T14:37:22.666Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="webmagic初体验">
-<meta name="twitter:description" content="入职新公司没两天上头就下任务了，让我做个爬虫爬企业数据，用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
+<meta name="twitter:description" content="用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。">
 <meta name="twitter:image" content="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/爬虫1.png">
 
 
@@ -363,7 +363,7 @@
       
 
       
-        <p>入职新公司没两天上头就下任务了，让我做个爬虫爬企业数据，用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。<br><a id="more"></a></p>
+        <p>用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。<br><a id="more"></a></p>
 <h1 id="WebMagic简单实现爬虫"><a href="#WebMagic简单实现爬虫" class="headerlink" title="WebMagic简单实现爬虫"></a>WebMagic简单实现爬虫</h1><p>再爬东西之前，先配置好请求头，因为现在网站一般都有反爬虫技术，所以把头弄好爬的才舒心。<br>Google Chrome按F12打开调试界面–&gt;network下找到请求头，把信息都复制到Site里<br>（因为企查查请求方式是GET方式，而天眼查是POST，GET方式的头部会好弄些，所以就拿企查查先爬了）<br><img src="/2019/03/29/webmagic初体验/爬虫1.png" alt="图片"></p>
 <p>简单来说，webmagic的爬取工作会先把main方法里填的url对应的网页下载下来，然后在该网页中找到正则或xpath匹配的url，然后放入到page.addTargetRequests队列中，第一次的爬取工作是爬取在main方法中匹配的url，队列中的url每爬取到一条url会把当前url对应的网页下载下来，然后再通过process方法里面的判断逻辑把匹配的url放入队列中待爬。以此类推。<br>（好尴尬- -，语文学的差，暂时只想到这个解释，个人建议还是看文档动手去爬点东西会理解的更深）</p>
 <p>贴代码贴代码！！！<br>首先先在site定义头部<br><img src="/2019/03/29/webmagic初体验/爬虫2.png" alt="图片"><br>然后process方法写爬虫核心逻辑<br><img src="/2019/03/29/webmagic初体验/爬虫3.png" alt="图片"><br>运行！<br><img src="/2019/03/29/webmagic初体验/爬虫4.png" alt="图片"><br>先爬1000条数据作为测试。<br><img src="/2019/03/29/webmagic初体验/爬虫5.png" alt="图片"></p>
@@ -399,7 +399,7 @@
   <p><span>本文标题:</span><a href="/2019/03/29/webmagic初体验/">webmagic初体验</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Zhoutzzz 的个人博客">Zhoutzzz</a></p>
   <p><span>发布时间:</span>2019年03月29日 - 23:03</p>
-  <p><span>最后更新:</span>2019年04月03日 - 22:04</p>
+  <p><span>最后更新:</span>2019年07月19日 - 22:07</p>
   <p><span>原始链接:</span><a href="/2019/03/29/webmagic初体验/" title="webmagic初体验">https://zhoutzzz.github.io/2019/03/29/webmagic初体验/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/" aria-label="复制成功！"></i></span>
   </p>
@@ -458,6 +458,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/07/19/记一次JPA不同查询得到同一对象修改发生异常的问题/" rel="prev" title="记一次JPA不同查询得到同一对象修改发生异常的问题">
+                记一次JPA不同查询得到同一对象修改发生异常的问题 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -541,7 +545,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -552,7 +556,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -563,7 +567,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
