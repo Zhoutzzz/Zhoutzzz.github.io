@@ -13,6 +13,7 @@ categories:
 soul项目地址：https://github.com/dromara/soul
 如果github慢，可以使用gitee代替：https://gitee.com/shuaiqiyu/soul
 ```
+<!--more-->
 ![](soul源码解析环境搭建教程/star+fork.png)
 
 然后在自己的仓库，将项目clone到本地。
