@@ -3,7 +3,9 @@ title: webmagic初体验
 date: 2019-03-29 23:52:22
 tags: [webmagic,Java,爬虫]
 copyright: ture
-categories: webmagic,Java,爬虫
+categories: 
+- Java
+- [webmagic,爬虫]
 ---
 用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。
 <!-- more -->
