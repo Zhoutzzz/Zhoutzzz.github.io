@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="算法，排序,">
+  <meta name="keywords" content="Java,网关,soul,">
 
 
 
@@ -79,30 +79,31 @@
 
 
 
-<meta name="description" content="之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。">
-<meta name="keywords" content="算法，排序">
+<meta name="description" content="soul网关介绍 soul网关，为了实现其高性能，轻量级的目标，网关核心部分使用本地缓存存储数据，基于Spring webflux框架，做到了实时响应；所有的组件以插件形式与网关集成，易扩展且具备热插拔效果，数据同步支持http长轮训, websocket, nacos, zookeeper，选择灵活度高，且默认使用http长轮训进行数据同步，使得即便其他同步方式失效的情况下，也不影响数据同步的工">
+<meta name="keywords" content="Java,网关,soul">
 <meta property="og:type" content="article">
-<meta property="og:title" content="算法入门-快速排序">
-<meta property="og:url" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/index.html">
+<meta property="og:title" content="soul架构概述与http服务使用">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。">
+<meta property="og:description" content="soul网关介绍 soul网关，为了实现其高性能，轻量级的目标，网关核心部分使用本地缓存存储数据，基于Spring webflux框架，做到了实时响应；所有的组件以插件形式与网关集成，易扩展且具备热插拔效果，数据同步支持http长轮训, websocket, nacos, zookeeper，选择灵活度高，且默认使用http长轮训进行数据同步，使得即便其他同步方式失效的情况下，也不影响数据同步的工">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排1.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排2.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排3.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排4.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排5.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排6.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排7.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code1.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code5.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code3.png">
-<meta property="og:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/code4.png">
-<meta property="og:updated_time" content="2021-01-14T15:20:26.202Z">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/soul-framework.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/soul-adminAndBoot.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/soul-http.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/soul-api-config.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/contextPath.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/divide1.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/divide2.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/response.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/change.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/error.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/rule.png">
+<meta property="og:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/rule-error.png">
+<meta property="og:updated_time" content="2021-01-15T17:11:52.782Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="算法入门-快速排序">
-<meta name="twitter:description" content="之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。">
-<meta name="twitter:image" content="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/快排1.png">
+<meta name="twitter:title" content="soul架构概述与http服务使用">
+<meta name="twitter:description" content="soul网关介绍 soul网关，为了实现其高性能，轻量级的目标，网关核心部分使用本地缓存存储数据，基于Spring webflux框架，做到了实时响应；所有的组件以插件形式与网关集成，易扩展且具备热插拔效果，数据同步支持http长轮训, websocket, nacos, zookeeper，选择灵活度高，且默认使用http长轮训进行数据同步，使得即便其他同步方式失效的情况下，也不影响数据同步的工">
+<meta name="twitter:image" content="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/soul-framework.png">
 
 
 
@@ -132,13 +133,13 @@
 
 
 
-  <link rel="canonical" href="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/">
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/">
 
 
 
 
 
-  <title>算法入门-快速排序 | Z</title>
+  <title>soul架构概述与http服务使用 | Z</title>
   
 
 
@@ -275,7 +276,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Zhoutzzz">
@@ -292,7 +293,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">算法入门-快速排序</h1>
+          <h1 class="post-title" itemprop="name headline">soul架构概述与http服务使用</h1>
         
 
         <div class="post-meta">
@@ -304,8 +305,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T16:23:13+08:00">
-                2019-03-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-15T20:16:29+08:00">
+                2021-01-15
               </time>
             
 
@@ -327,8 +328,30 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法-排序/" itemprop="url" rel="index">
-                    <span itemprop="name">算法, 排序</span>
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
                   </a>
                 </span>
 
@@ -364,19 +387,41 @@
       
 
       
-        <p>之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。<br>因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。<br><a id="more"></a><br>写之前先拿理论知识铺垫下：</p>
-<h1 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h1><p><em>摘自百度百科</em><br>时间复杂度是同一问题可用不同算法解决，而一个算法的质量优劣将影响到算法乃至程序的效率。算法分析的目的在于选择合适算法和改进算法。<br>计算机科学中，算法的时间复杂度是一个函数，它定性描述了该算法的运行时间。这是一个关于代表算法输入值的字符串的长度的函数。时间复杂度常用大O符号表述，不包括这个函数的低阶项和首项系数。使用这种方式时，时间复杂度可被称为是渐近的，它考察当输入值大小趋近无穷时的情况。</p>
-<h2 id="大O符号"><a href="#大O符号" class="headerlink" title="大O符号"></a>大O符号</h2><p><em>摘自百度百科</em><br>大O符号（Big O notation）是用于描述函数渐进行为的数学符号。更确切地说，它是用另一个（通常更简单的）函数来描述一个函数数量级的渐近上界。在数学中，它一般用来刻画被截断的无穷级数尤其是渐近级数的剩余项；在计算机科学中，它在分析算法复杂性的方面非常有用。</p>
-<p>常用的时间复杂度有O(nlogn)、O(n²)、O(n^3)、O(1)、O(n^x)、O(n)等。</p>
-<h1 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h1><p>快排的原理类似冒泡排序，不同的是冒泡排序比较的是相邻的两个数，而快排是比较基准值，基准值的选取决定了快排的速度，最慢情况快排的时间复杂度和冒泡排序一样是O(n²)。一般情况下快排的时间复杂度为O(nlogn)。<br>一般选择基准值的时候可以选择开头或者结尾的元素，但这样选在顺序或逆序情况下时间复杂度就和冒泡一样了，所以快排的其中一种优化方式就是用三数取中法来选择基准值，这种选择即使在极端情况下快排的速度也不会达到O(n²)。</p>
-<p>首先，选取序列中开头、中间和结尾的元素，对这三个元素进行排序。<br><img src="/2019/03/17/算法入门-快速排序/快排1.png" alt="图片"></p>
-<p>然后将中间位置的元素作为基准值，并放到结尾元素的前面。<br><img src="/2019/03/17/算法入门-快速排序/快排2.png" alt="图片"></p>
-<p>因为基准值在右边，所以我们左指针从左边开始遍历，寻找比基准值大的数，当我们找到后停下，开始用右指针从基准值左边寻找比基准值小的数。<br>但是右指针与左指针相遇之前都没有找到比基准值小的数，如果左右两个指针相遇且该值大于基准值，则交换基准值与该值的位置。<br><img src="/2019/03/17/算法入门-快速排序/快排3.png" alt="图片"></p>
-<p>交换位置后的情况<br><img src="/2019/03/17/算法入门-快速排序/快排4.png" alt="图片"></p>
-<p>此时基准值4将该序列分成两部分，左边的数均小于4，右边的均大于4。<br>因为分割后左边只有2个数，所以第二次比较时只用比较一次即可，右边｛9,6,37,5｝同样取头尾，这里偶数取6。<br>同样的排序换位后就变成这样<br><img src="/2019/03/17/算法入门-快速排序/快排5.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/快排6.png" alt="图片"><br>这时右边序列被拆成2部分，左边为5，右边为37，9。<br>依旧进行递归处理，得到最终结果。<br><img src="/2019/03/17/算法入门-快速排序/快排7.png" alt="图片"></p>
-<h2 id="代码展示"><a href="#代码展示" class="headerlink" title="代码展示"></a>代码展示</h2><p><img src="/2019/03/17/算法入门-快速排序/code1.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code5.png" alt="图片"><br><img src="/2019/03/17/算法入门-快速排序/code3.png" alt="图片"><br>最后输出结果如下<br><img src="/2019/03/17/算法入门-快速排序/code4.png" alt="图片"></p>
-<h1 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h1><p>这是用了3数取中法优化过的快排，平均时间复杂度为O(nlogn)，当然除此之外优化方法还有其他，比如根据拆分的序列长短结合插入排序使用等（这个方法我倒是还没写过，听说效率会更快，有时间去写一个对比下）。<br>快排的核心就在于基准值的选取，在遇到顺序未知的序列时，尽量想办法选择好基准值，保证快排的效率，不然可能会弄成冒泡的时间复杂度哦。</p>
-<p>一枚菜鸡Java Coder写的第一篇博客，如有做得不好的地方，欢迎指正。<br>作为一名刚入行的coder，写博客的时间虽然晚了些，不过有句话说得好，<em>种树最好的时候是10年前，其次就是现在</em>，所以抓紧时间学习，努力尝试养成写博客的习惯，对自己学过的东西能做一个复习、总结，也能为不了解的朋友解惑。<br>（想想未来还有未知的计算机专业毕业的学生要进入到这个行业，压力山大啊，不抓紧学习就要out了，在此也对业内所以人说一声：加油啊，各位。）</p>
+        <h1 id="soul网关介绍"><a href="#soul网关介绍" class="headerlink" title="soul网关介绍"></a>soul网关介绍</h1><ul>
+<li><p>soul网关，为了实现其高性能，轻量级的目标，网关核心部分使用本地缓存存储数据，基于Spring webflux框架，做到了实时响应；所有的组件以插件形式与网关集成，易扩展且具备热插拔效果，数据同步支持http长轮训, websocket, nacos, zookeeper，选择灵活度高，且默认使用http长轮训进行数据同步，使得即便其他同步方式失效的情况下，也不影响数据同步的工作；提供控制台，在线动态修改网关配置，熔断，限流，鉴权等功能。</p>
+<a id="more"></a>
+<h1 id="soul架构介绍"><a href="#soul架构介绍" class="headerlink" title="soul架构介绍"></a>soul架构介绍</h1><p>以下是soul官网的架构图<br><img src="/2021/01/15/soul架构概述与http服务使用/soul-framework.png" alt="以下是soul官网的架构图"></p>
+</li>
+<li><p>图中可以看出，整个soul架构分为4个模块，soul-admin，数据同步（基于SPI进行扩展的部分），soul-cluster（可以理解为soul-core，是网关的核心部分，流量接入点），soul-plugin和handler。</p>
+</li>
+<li>soul-admin是soul的控制台，负责提供动态配置插件，路由规则，用户鉴权等功能，配置存储到数据库作为持久化方案。</li>
+<li>数据同步部分，当用户通过控制台配置生效时，会通过event-bus发送配置修改事件到网关，而发送的策略使用SPI扩展实现，根据具体的配置策略，使用对应的同步方案，很灵活。</li>
+<li>在网关核心部分，拥有推和拉两种方式进行数据同步。比如，使用http长轮训，则网关会主动向数据同步中心拉取数据，zk和websocket会主动向网关推送数据。<br>在网关的使用方面，用户请求被网关获取之后，根据其配置的插件规则进行相应处理。</li>
+<li>soul-plugin部分，负责网关收到请求后进行具体处理，比如，配置monitor和redis插件，则Prometheus/redis会主动向网关获取数据，配置dubbo，divide，spring cloud等插件，会主动向插件对应的工具发送数据。</li>
+</ul>
+<h1 id="结合example，熟悉soul"><a href="#结合example，熟悉soul" class="headerlink" title="结合example，熟悉soul"></a>结合example，熟悉soul</h1><h2 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h2><ul>
+<li>第一次使用soul的话，启动soul项目下的soul-admin，soul-bootstrap，example下任意soul项目，<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">soul-bootstrap是网关的启动入口。</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="/2021/01/15/soul架构概述与http服务使用/soul-adminAndBoot.png" alt="alala"></p>
+<ul>
+<li>example下我使用http作为例子。<br><img src="soul-http.png" alt><h2 id="访问网关"><a href="#访问网关" class="headerlink" title="访问网关"></a>访问网关</h2></li>
+<li>三个项目启动好之后，观察日志可以发现，http例子在启动时就会为我们注册好测试api。我们可以访问localhost:9095进入soul控制台看到已经配置好的api</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如果使用其他例子,可以自行参考官网进行使用</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/01/15/soul架构概述与http服务使用/soul-api-config.png" alt></p>
+<ul>
+<li>在http例子中，默认启动端口为8188，在没有网关的时候，通常都是直接访问服务地址<strong>localhost:8188/test/findById?userId=123</strong>，这时候我们可以访问网关地址<strong>localhost:9195/http/test/findById?userId=123</strong>，来完成向目标服务的调用。</li>
+<li>这里可以发现，直接访问与通过网关访问在API部分有个区别，多了个 <strong>/http</strong>，这个 <strong>/http</strong>，在soul中被称为<strong>contextPath（上下文路径，也就是下图的红框部分）</strong>，这个<strong>contextPath</strong>是soul的路由前缀，soul规定在进行api配置的时候需要有一个路由前缀，除了在项目配置，也可以在控制台的divide插件进行修改。<br><strong>divide插件是soul处理http请求的核心插件</strong><br><img src="/2021/01/15/soul架构概述与http服务使用/contextPath.png" alt></li>
+<li>而在divide插件进行配置的话，对应的位置就是下图红框部分。<br><img src="/2021/01/15/soul架构概述与http服务使用/divide1.png" alt><br><img src="/2021/01/15/soul架构概述与http服务使用/divide2.png" alt></li>
+<li>访问网关地址后，发现获取到了响应数据，并且观察bootstrap的日志，发现网关访问了我们的真是服务器。<br><img src="/2021/01/15/soul架构概述与http服务使用/response.png" alt></li>
+<li>之后，让我们修改一下配置，看看配置的具体规则，首先修改选择器的路由规则。<br><img src="/2021/01/15/soul架构概述与http服务使用/change.png" alt></li>
+<li>再次访问网关，发现已经访问不到了，提示没有找到对应的选择器，<br><img src="/2021/01/15/soul架构概述与http服务使用/error.png" alt></li>
+<li>把地址改为<strong>galigeigei</strong>之后又可以了，我们再来看看选择器下具体api的配置修改会产生什么，把前缀干掉，只留下 <strong>/test/**</strong>的配置<br><img src="/2021/01/15/soul架构概述与http服务使用/rule.png" alt></li>
+<li>提示没有匹配的规则<br><img src="/2021/01/15/soul架构概述与http服务使用/rule-error.png" alt></li>
+<li>到这里，证明了在配置api相应规则的时候，选择器的url规则，与选择器规则中的url需要相同，除非你的匹配规则使用通配符匹配，soul的url匹配规则是将全路径作为匹配对象进行匹配，比如/http/test/find这个URL，contextPath是/http，在进行选择器匹配的时候，先根据选择器规则，在URL上进行匹配到/http，进入到规则匹配，匹配的时候会带上contextPath，前面的例子就说明了，如果规则匹配中没有定义contextPath，就会报错。</li>
+<li>至此网关的初步使用就完成了，网关中内置了很多插件，比如熔断hystrix, 限流sentinel, 监控monitor，dubbo，Spring cloud等，后续尝试使用不同插件理解各插件的具体用法。</li>
+</ul>
 
       
     </div>
@@ -396,35 +441,6 @@
     <div>
       
         
-<div class="my_post_copyright">
-  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
-  
-  <!-- JS库 sweetalert 可修改路径 -->
-  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/03/17/算法入门-快速排序/">算法入门-快速排序</a></p>
-  <p><span>文章作者:</span><a href="/" title="访问 Zhoutzzz 的个人博客">Zhoutzzz</a></p>
-  <p><span>发布时间:</span>2019年03月17日 - 16:03</p>
-  <p><span>最后更新:</span>2021年01月14日 - 23:01</p>
-  <p><span>原始链接:</span><a href="/2019/03/17/算法入门-快速排序/" title="算法入门-快速排序">https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/" aria-label="复制成功！"></i></span>
-  </p>
-  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
-</div>
-<script> 
-    var clipboard = new Clipboard('.fa-clipboard');
-    $(".fa-clipboard").click(function(){
-      clipboard.on('success', function(){
-        swal({   
-          title: "",   
-          text: '复制成功',
-          icon: "success", 
-          showConfirmButton: true
-          });
-    });
-    });  
-</script>
-
       
     </div>
 
@@ -438,7 +454,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/算法，排序/" rel="tag"><i class="fa fa-tag"></i> 算法，排序</a>
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
           
         </div>
       
@@ -451,15 +469,15 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2021/01/14/soul源码解析环境搭建教程/" rel="next" title="soul源码解析环境搭建教程">
+                <i class="fa fa-chevron-left"></i> soul源码解析环境搭建教程
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/24/算法-插入排序/" rel="prev" title="算法-插入排序">
-                算法-插入排序 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -614,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#时间复杂度"><span class="nav-number">1.</span> <span class="nav-text">时间复杂度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大O符号"><span class="nav-number">1.1.</span> <span class="nav-text">大O符号</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#快速排序"><span class="nav-number">2.</span> <span class="nav-text">快速排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码展示"><span class="nav-number">2.1.</span> <span class="nav-text">代码展示</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结一下"><span class="nav-number">3.</span> <span class="nav-text">总结一下</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul网关介绍"><span class="nav-number">1.</span> <span class="nav-text">soul网关介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#soul架构介绍"><span class="nav-number">2.</span> <span class="nav-text">soul架构介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结合example，熟悉soul"><span class="nav-number">3.</span> <span class="nav-text">结合example，熟悉soul</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动服务"><span class="nav-number">3.1.</span> <span class="nav-text">启动服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问网关"><span class="nav-number">3.2.</span> <span class="nav-text">访问网关</span></a></li></ol></li></ol></div>
             
 
           </div>
