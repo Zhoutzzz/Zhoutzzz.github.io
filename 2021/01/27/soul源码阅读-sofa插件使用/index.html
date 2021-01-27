@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="网关,soul,Java,">
 
 
 
@@ -79,21 +79,22 @@
 
 
 
-<meta name="description" content="soul源码阅读-sofa插件使用启动 启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下    SofaServiceBeanPostProcessor.">
+<meta name="description" content="启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下">
+<meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Z">
+<meta property="og:title" content="soul源码阅读-sofa插件使用">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-sofa插件使用/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="soul源码阅读-sofa插件使用启动 启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下    SofaServiceBeanPostProcessor.">
+<meta property="og:description" content="启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82.png?x-oss-process=image%2Fresize%2Cw_1500">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993098310-28185fc1-df7c-4624-bba9-4c9b3b95d8c9.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993139171-1621e479-aeb8-4d7d-9a03-0c380e784c38.png">
-<meta property="og:updated_time" content="2021-01-27T04:49:46.451Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82-20210127125800421.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993098310-28185fc1-df7c-4624-bba9-4c9b3b95d8c9-20210127125806971.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993139171-1621e479-aeb8-4d7d-9a03-0c380e784c38-20210127125814774.png">
+<meta property="og:updated_time" content="2021-01-27T05:09:49.912Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Z">
-<meta name="twitter:description" content="soul源码阅读-sofa插件使用启动 启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下    SofaServiceBeanPostProcessor.">
-<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82.png?x-oss-process=image%2Fresize%2Cw_1500">
+<meta name="twitter:title" content="soul源码阅读-sofa插件使用">
+<meta name="twitter:description" content="启动 参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa 在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82-20210127125800421.png">
 
 
 
@@ -129,7 +130,7 @@
 
 
 
-  <title> | Z</title>
+  <title>soul源码阅读-sofa插件使用 | Z</title>
   
 
 
@@ -283,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">soul源码阅读-sofa插件使用</h1>
         
 
         <div class="post-meta">
@@ -295,7 +296,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:05:22+08:00">
                 2021-01-27
               </time>
             
@@ -305,6 +306,50 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -333,26 +378,24 @@
       
 
       
-        <h1 id="soul源码阅读-sofa插件使用"><a href="#soul源码阅读-sofa插件使用" class="headerlink" title="soul源码阅读-sofa插件使用"></a>soul源码阅读-sofa插件使用</h1><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><ul>
-<li><h2 id="启动-1"><a href="#启动-1" class="headerlink" title="启动"></a>启动</h2><ul>
+        <h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><ul>
 <li>参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa</li>
-<li>在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下</li>
-</ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
-<ul>
-<li>SofaServiceBeanPostProcessor.handler</li>
+<li><p>在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下</p>
+<a id="more"></a>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82-20210127125800421.png" alt="image.png"></p>
+</li>
+<li><p>SofaServiceBeanPostProcessor.handler</p>
+</li>
 <li>RegisterUtils.doRegister</li>
 <li>OkHttpTools.getInstance.post–http#post方法调用soul-admin进行注册</li>
 <li>SoulClientController.registerSofaRpc</li>
 <li>SoulClientRegisterService.registerSofa</li>
 <li>在启动的时候，sofa插件利用Spring的bean后置处理器机制，在创建一个bean的时候，通过http调用soul-admin将插件注册到网关中，然而后面报错的具体点却是，在对插件元数据进行入库持久化的时候，报错了，具体报错的点在这</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993098310-28185fc1-df7c-4624-bba9-4c9b3b95d8c9.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993098310-28185fc1-df7c-4624-bba9-4c9b3b95d8c9-20210127125806971.png" alt="image.png"></p>
 <ul>
 <li>这个方法使用serviceName和method进行查询，在sofa的例子中，使用的是dubboTest类型，而如果你之前用了dubbo例子，会先将dubbo例子的接口注册的时候持久化其元数据，sofa例子的参数与dubbo的参数是一样的，而这里进行注册的时候，上述红框代码使用serviceName和method查询的时候返回2条数据，导致最终注册失败。这里查出来2条数据，具体操作是在dubbo例子中先启动一次，然后修改配置文件的appName属性在启动一次，就能注册2份appName不一样其他都一样的数据。</li>
-<li>解决了问题之后，我们再进行调用测试<br><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993139171-1621e479-aeb8-4d7d-9a03-0c380e784c38.png" alt="image.png"></li>
-</ul>
-</li>
+<li>解决了问题之后，我们再进行调用测试<br><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610993139171-1621e479-aeb8-4d7d-9a03-0c380e784c38-20210127125814774.png" alt="image.png"></li>
 </ul>
 
       
@@ -384,6 +427,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
 
       
       
@@ -393,8 +444,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/15/soul架构概述与http服务使用/" rel="next" title="soul架构概述与http服务使用">
-                <i class="fa fa-chevron-left"></i> soul架构概述与http服务使用
+              <a href="/2021/01/27/soul源码阅读-springCloud插件使用/" rel="next" title="soul源码阅读-springCloud插件使用">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-springCloud插件使用
               </a>
             
           </div>
@@ -403,8 +454,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/" rel="prev" title>
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/01/27/soul-dubbo例子使用/" rel="prev" title="soul-dubbo例子使用">
+                soul-dubbo例子使用 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -489,7 +540,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -560,7 +611,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读-sofa插件使用"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读-sofa插件使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动"><span class="nav-number">1.1.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#启动-1"><span class="nav-number">1.2.</span> <span class="nav-text">启动</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#启动"><span class="nav-number">1.</span> <span class="nav-text">启动</span></a></li></ol></div>
             
 
           </div>

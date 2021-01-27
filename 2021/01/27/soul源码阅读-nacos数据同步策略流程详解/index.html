@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="网关,soul,Java,">
 
 
 
@@ -80,18 +80,19 @@
 
 
 <meta name="description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
+<meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Z">
+<meta property="og:title" content="soul源码阅读-nacos数据同步策略流程详解">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/index.html">
 <meta property="og:site_name" content="Z">
 <meta property="og:description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png">
-<meta property="og:updated_time" content="2021-01-27T04:49:46.546Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a-20210127125854317.png">
+<meta property="og:updated_time" content="2021-01-27T05:08:08.493Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Z">
+<meta name="twitter:title" content="soul源码阅读-nacos数据同步策略流程详解">
 <meta name="twitter:description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
-<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a-20210127125854317.png">
 
 
 
@@ -127,7 +128,7 @@
 
 
 
-  <title> | Z</title>
+  <title>soul源码阅读-nacos数据同步策略流程详解 | Z</title>
   
 
 
@@ -281,7 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">soul源码阅读-nacos数据同步策略流程详解</h1>
         
 
         <div class="post-meta">
@@ -293,7 +294,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:03:54+08:00">
                 2021-01-27
               </time>
             
@@ -303,6 +304,50 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -336,6 +381,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">admin[admin启动向nacos中发送数据] --&gt; nacos[nacos]</span><br><span class="line">web[web启动时从nacos中拿取数据更新本地缓存] --&gt;nacos[nacos]</span><br><span class="line"></span><br><span class="line">nacos1[nacos中的数据发生更改,发送更改数据到web] --&gt; web1[web]</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>因为目前版本admin中的nacos数据同步，没有在启动时将数据同步到nacos中，所以目前来说，nacos数据同步方案在启动的时候需要手动进行同步，关于nacos同步策略的使用以及可能遇到的坑，可以参考<a href="https://juejin.cn/post/6921170233868845064" target="_blank" rel="noopener">Soul网关源码阅读（十六）Nacos数据同步示例运行</a></p>
+<a id="more"></a>
 </li>
 </ul>
 <h2 id="Admin同步数据到Nacos"><a href="#Admin同步数据到Nacos" class="headerlink" title="Admin同步数据到Nacos"></a>Admin同步数据到Nacos</h2><ul>
@@ -357,7 +403,7 @@
 <ul>
 <li>我们把bootstrap的数据同步配置改为nacos之后，在bootstrap启动时，会注册一个nacos的监听，用于监听nacos发送的请求，而注册这个nacos监听的位置在NacosCacheHandler#watcherData之中，但是，实际上调用到这个方法，是在NacosSyncDataService里面调用，我们看下二者关系。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a-20210127125854317.png" alt="image.png"></p>
 <ul>
 <li>NacosSyncDataService继承了NacosCacheHandler，而在NacosSyncDataService的start方法里是这么写的</li>
 </ul>
@@ -385,6 +431,8 @@
 <ul>
 <li>不明白这样写的目的是什么，因为在执行这个更新操作之前，在admin修改了数据之后，controller到service只是先存入了数据库，然后调用Spring Publisher把数据发送到对应的listener进行修改，此时本地缓存和nacos中还是老的数据，如果要更新缓存和nacos，需要先执行上面的代码，但是上面代码的configInfo是从nacos中拿取的老数据，AUTH_MAP中也是老数据，两个老数据这样操作，不是等于没操作么？？？🤷‍♂️</li>
 </ul>
+<hr>
+<p>后来经过讨论，这个地方应该是为了集群情况下确保修改缓存之前是从nacos的数据为基础来修改的。</p>
 
       
     </div>
@@ -415,6 +463,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
 
       
       
@@ -424,8 +480,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/" rel="next" title>
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/" rel="next" title="soul源码阅读-soul-web使用websocket策略同步配置原理解析">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-soul-web使用websocket策略同步配置原理解析
               </a>
             
           </div>
@@ -434,8 +490,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" rel="prev" title>
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/" rel="prev" title="soul源码阅读-zookeeper数据同步策略流程详解">
+                soul源码阅读-zookeeper数据同步策略流程详解 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -520,7 +576,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

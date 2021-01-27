@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="网关,soul,Java,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在使用soul将我们编写的controller接口注册到网关，由网关统一代理时，一般情况，http方式，我们只需要使用@SoulSpringMvcClient注解标注在对应的接口上就行了，那么，我们使用了注解之后，soul是如何将我们的接口注册到网关的呢 先看看注解在哪些地方被使用了">
+<meta name="keywords" content="网关,soul,Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-使用-SoulSpringMvcClient将接口注册到网关流程解析/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="在使用soul将我们编写的controller接口注册到网关，由网关统一代理时，一般情况，http方式，我们只需要使用@SoulSpringMvcClient注解标注在对应的接口上就行了，那么，我们使用了注解之后，soul是如何将我们的接口注册到网关的呢 先看看注解在哪些地方被使用了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611243592672-921784be-84e7-440b-adfb-2c5c014c4e07-20210127130021661.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611244925460-dcc8d25f-3677-40da-b993-703991845b08-20210127130028645.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611245076281-bb2e000a-3176-4afb-b2b8-cf368a5f8a3f-20210127130041273.png">
+<meta property="og:updated_time" content="2021-01-27T05:14:32.287Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析">
+<meta name="twitter:description" content="在使用soul将我们编写的controller接口注册到网关，由网关统一代理时，一般情况，http方式，我们只需要使用@SoulSpringMvcClient注解标注在对应的接口上就行了，那么，我们使用了注解之后，soul是如何将我们的接口注册到网关的呢 先看看注解在哪些地方被使用了">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611243592672-921784be-84e7-440b-adfb-2c5c014c4e07-20210127130021661.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-使用-SoulSpringMvcClient将接口注册到网关流程解析/">
+
+
+
+
+
+  <title>soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析 | Z</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Z</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-使用-SoulSpringMvcClient将接口注册到网关流程解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:04:36+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <ul>
+<li>在使用soul将我们编写的controller接口注册到网关，由网关统一代理时，一般情况，http方式，我们只需要使用@SoulSpringMvcClient注解标注在对应的接口上就行了，那么，我们使用了注解之后，soul是如何将我们的接口注册到网关的呢</li>
+<li><p>先看看注解在哪些地方被使用了</p>
+<a id="more"></a>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611243592672-921784be-84e7-440b-adfb-2c5c014c4e07-20210127130021661.png" alt="image.png"></p>
+</li>
+<li><p>我们进到这个类里面,使用了spring的bean实例化里面的后置处理器机制进行了具体处理。</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">@Slf4j</span><br><span class="line">public class SpringMvcClientBeanPostProcessor implements BeanPostProcessor &#123;</span><br><span class="line"></span><br><span class="line">    private final ThreadPoolExecutor executorService;</span><br><span class="line"></span><br><span class="line">    private final String url;</span><br><span class="line"></span><br><span class="line">    private final SoulSpringMvcConfig soulSpringMvcConfig;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Instantiates a new Soul client bean post processor.</span><br><span class="line">     *</span><br><span class="line">     * @param soulSpringMvcConfig the soul spring mvc config</span><br><span class="line">     */</span><br><span class="line">    // 构造器里面初始化了调用url。</span><br><span class="line">    public SpringMvcClientBeanPostProcessor(final SoulSpringMvcConfig soulSpringMvcConfig) &#123;</span><br><span class="line">        ValidateUtils.validate(soulSpringMvcConfig);</span><br><span class="line">        this.soulSpringMvcConfig = soulSpringMvcConfig;</span><br><span class="line">        // 这里到adminUrl就是admin控制台地址，后面的path就是具体到路径了</span><br><span class="line">        url = soulSpringMvcConfig.getAdminUrl() + &quot;/soul-client/springmvc-register&quot;;</span><br><span class="line">        executorService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue&lt;&gt;());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object postProcessAfterInitialization(@NonNull final Object bean, @NonNull final String beanName) throws BeansException &#123;</span><br><span class="line">        if (soulSpringMvcConfig.isFull()) &#123;</span><br><span class="line">            return bean;</span><br><span class="line">        &#125;</span><br><span class="line">        // 获取到一些常用注解</span><br><span class="line">        Controller controller = AnnotationUtils.findAnnotation(bean.getClass(), Controller.class);</span><br><span class="line">        RestController restController = AnnotationUtils.findAnnotation(bean.getClass(), RestController.class);</span><br><span class="line">        RequestMapping requestMapping = AnnotationUtils.findAnnotation(bean.getClass(), RequestMapping.class);</span><br><span class="line">        if (controller != null || restController != null || requestMapping != null) &#123;</span><br><span class="line">            根据上面获取到注解判断，获取SoulSpringMvcClient注解，之后创建新线程向soul注册接口</span><br><span class="line">            SoulSpringMvcClient clazzAnnotation = AnnotationUtils.findAnnotation(bean.getClass(), SoulSpringMvcClient.class);</span><br><span class="line">            String prePath = &quot;&quot;;</span><br><span class="line">            if (Objects.nonNull(clazzAnnotation)) &#123;</span><br><span class="line">                if (clazzAnnotation.path().indexOf(&quot;*&quot;) &gt; 1) &#123;</span><br><span class="line">                    String finalPrePath = prePath;</span><br><span class="line">                    executorService.execute(() -&gt; RegisterUtils.doRegister(buildJsonParams(clazzAnnotation, finalPrePath), url,</span><br><span class="line">                            RpcTypeEnum.HTTP));</span><br><span class="line">                    return bean;</span><br><span class="line">                &#125;</span><br><span class="line">                prePath = clazzAnnotation.path();</span><br><span class="line">            &#125;</span><br><span class="line">            final Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(bean.getClass());</span><br><span class="line">            for (Method method : methods) &#123;</span><br><span class="line">                SoulSpringMvcClient soulSpringMvcClient = AnnotationUtils.findAnnotation(method, SoulSpringMvcClient.class);</span><br><span class="line">                if (Objects.nonNull(soulSpringMvcClient)) &#123;</span><br><span class="line">                    String finalPrePath = prePath;</span><br><span class="line">                    executorService.execute(() -&gt; RegisterUtils.doRegister(buildJsonParams(soulSpringMvcClient, finalPrePath), url,</span><br><span class="line">                            RpcTypeEnum.HTTP));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return bean;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // 通过注解里的属性构造出请求地址</span><br><span class="line">    private String buildJsonParams(final SoulSpringMvcClient soulSpringMvcClient, final String prePath) &#123;</span><br><span class="line">        String contextPath = soulSpringMvcConfig.getContextPath();</span><br><span class="line">        String appName = soulSpringMvcConfig.getAppName();</span><br><span class="line">        Integer port = soulSpringMvcConfig.getPort();</span><br><span class="line">        String path = contextPath + prePath + soulSpringMvcClient.path();</span><br><span class="line">        String desc = soulSpringMvcClient.desc();</span><br><span class="line">        String configHost = soulSpringMvcConfig.getHost();</span><br><span class="line">        String host = StringUtils.isBlank(configHost) ? IpUtils.getHost() : configHost;</span><br><span class="line">        String configRuleName = soulSpringMvcClient.ruleName();</span><br><span class="line">        String ruleName = StringUtils.isBlank(configRuleName) ? path : configRuleName;</span><br><span class="line">        SpringMvcRegisterDTO registerDTO = SpringMvcRegisterDTO.builder()</span><br><span class="line">                .context(contextPath)</span><br><span class="line">                .host(host)</span><br><span class="line">                .port(port)</span><br><span class="line">                .appName(appName)</span><br><span class="line">                .path(path)</span><br><span class="line">                .pathDesc(desc)</span><br><span class="line">                .rpcType(soulSpringMvcClient.rpcType())</span><br><span class="line">                .enabled(soulSpringMvcClient.enabled())</span><br><span class="line">                .ruleName(ruleName)</span><br><span class="line">                .registerMetaData(soulSpringMvcClient.registerMetaData())</span><br><span class="line">                .build();</span><br><span class="line">        return OkHttpTools.getInstance().getGson().toJson(registerDTO);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>看看具体RegisterUtils.doRegister()方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public static void doRegister(final String json, final String url, final RpcTypeEnum rpcTypeEnum) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            // 发起http请求，注意这个url，是向admin控制台发起调用</span><br><span class="line">            String result = OkHttpTools.getInstance().post(url, json);</span><br><span class="line">            if (AdminConstants.SUCCESS.equals(result)) &#123;</span><br><span class="line">                log.info(&quot;&#123;&#125; client register success: &#123;&#125; &quot;, rpcTypeEnum.getName(), json);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                log.error(&quot;&#123;&#125; client register error: &#123;&#125; &quot;, rpcTypeEnum.getName(), json);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            log.error(&quot;cannot register soul admin param, url: &#123;&#125;, request body: &#123;&#125;&quot;, url, json, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>doRegister唯一作用就是发起一个向soul-admin对应接口的http调用，那我们看看soul-admin</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611244925460-dcc8d25f-3677-40da-b993-703991845b08-20210127130028645.png" alt="image.png"></p>
+<ul>
+<li>也是一个很常规的controller接口，成功调用到了</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611245076281-bb2e000a-3176-4afb-b2b8-cf368a5f8a3f-20210127130041273.png" alt="image.png"></p>
+<ul>
+<li>里面有两个方法<strong>handlerSpringMvcSelector</strong>和<strong>handlerSpringMvcRule</strong>， 我们看看这两个方法具体干了什么</li>
+<li>selector：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">private String handlerSpringMvcSelector(final SpringMvcRegisterDTO dto) &#123;</span><br><span class="line">    // 进行一些参数的校验转换的处理</span><br><span class="line">        String contextPath = dto.getContext();</span><br><span class="line">        SelectorDO selectorDO = selectorService.findByName(contextPath);</span><br><span class="line">        String selectorId;</span><br><span class="line">        String uri = String.join(&quot;:&quot;, dto.getHost(), String.valueOf(dto.getPort()));</span><br><span class="line">        if (Objects.isNull(selectorDO)) &#123;</span><br><span class="line">            selectorId = registerSelector(contextPath, dto.getRpcType(), dto.getAppName(), uri);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            selectorId = selectorDO.getId();</span><br><span class="line">            //update upstream</span><br><span class="line">            String handle = selectorDO.getHandle();</span><br><span class="line">            String handleAdd;</span><br><span class="line">            DivideUpstream addDivideUpstream = buildDivideUpstream(uri);</span><br><span class="line">            SelectorData selectorData = selectorService.buildByName(contextPath);</span><br><span class="line">            if (StringUtils.isBlank(handle)) &#123;</span><br><span class="line">                handleAdd = GsonUtils.getInstance().toJson(Collections.singletonList(addDivideUpstream));</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                List&lt;DivideUpstream&gt; exist = GsonUtils.getInstance().fromList(handle, DivideUpstream.class);</span><br><span class="line">                for (DivideUpstream upstream : exist) &#123;</span><br><span class="line">                    if (upstream.getUpstreamUrl().equals(addDivideUpstream.getUpstreamUrl())) &#123;</span><br><span class="line">                        return selectorId;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                exist.add(addDivideUpstream);</span><br><span class="line">                handleAdd = GsonUtils.getInstance().toJson(exist);</span><br><span class="line">            &#125;</span><br><span class="line">            selectorDO.setHandle(handleAdd);</span><br><span class="line">            selectorData.setHandle(handleAdd);</span><br><span class="line">            // update db 保存配置到数据库</span><br><span class="line">            selectorMapper.updateSelective(selectorDO);</span><br><span class="line">            // submit upstreamCheck 将配置更新到本地缓存</span><br><span class="line">            upstreamCheckService.submit(contextPath, addDivideUpstream);</span><br><span class="line">            // publish change event.  使用spring 事件发布，发布配置更改事件到soul网关核心。</span><br><span class="line">            eventPublisher.publishEvent(new DataChangedEvent(ConfigGroupEnum.SELECTOR, DataEventTypeEnum.UPDATE,</span><br><span class="line">                    Collections.singletonList(selectorData)));</span><br><span class="line">        &#125;</span><br><span class="line">        return selectorId;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>rule: </li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public String register(final RuleDTO ruleDTO) &#123;</span><br><span class="line">    // 规则入库保存</span><br><span class="line">        RuleDO ruleDO = RuleDO.buildRuleDO(ruleDTO);</span><br><span class="line">        List&lt;RuleConditionDTO&gt; ruleConditions = ruleDTO.getRuleConditions();</span><br><span class="line">        if (StringUtils.isEmpty(ruleDTO.getId())) &#123;</span><br><span class="line">            ruleMapper.insertSelective(ruleDO);</span><br><span class="line">            ruleConditions.forEach(ruleConditionDTO -&gt; &#123;</span><br><span class="line">                ruleConditionDTO.setRuleId(ruleDO.getId());</span><br><span class="line">                ruleConditionMapper.insertSelective(RuleConditionDO.buildRuleConditionDO(ruleConditionDTO));</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    // 发布修改事件</span><br><span class="line">        publishEvent(ruleDO, ruleConditions);</span><br><span class="line">        return ruleDO.getId();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">private void publishEvent(final RuleDO ruleDO, final List&lt;RuleConditionDTO&gt; ruleConditions) &#123;</span><br><span class="line">        SelectorDO selectorDO = selectorMapper.selectById(ruleDO.getSelectorId());</span><br><span class="line">        PluginDO pluginDO = pluginMapper.selectById(selectorDO.getPluginId());</span><br><span class="line"></span><br><span class="line">        List&lt;ConditionData&gt; conditionDataList =</span><br><span class="line">                ruleConditions.stream().map(ConditionTransfer.INSTANCE::mapToRuleDTO).collect(Collectors.toList());</span><br><span class="line">        // publish change event.</span><br><span class="line">        eventPublisher.publishEvent(new DataChangedEvent(ConfigGroupEnum.RULE, DataEventTypeEnum.UPDATE,</span><br><span class="line">                Collections.singletonList(RuleDO.transFrom(ruleDO, pluginDO.getName(), conditionDataList))));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>只是简单的入库保存配置，然后通过监听，发布更改事件，那就要看看发布的监听具体内容了。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">// 指定了泛型DataChangedEvent，所以结合上面的事件发布传入的参数，可以定位到soul定义的事件分发器里面</span><br><span class="line">public class DataChangedEventDispatcher implements ApplicationListener&lt;DataChangedEvent&gt;, InitializingBean &#123;</span><br><span class="line"></span><br><span class="line">    private ApplicationContext applicationContext;</span><br><span class="line"></span><br><span class="line">    //内部注入了spring 监听来进行事件发送</span><br><span class="line">    private List&lt;DataChangedListener&gt; listeners;</span><br><span class="line"></span><br><span class="line">    public DataChangedEventDispatcher(final ApplicationContext applicationContext) &#123;</span><br><span class="line">        this.applicationContext = applicationContext;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">    public void onApplicationEvent(final DataChangedEvent event) &#123;</span><br><span class="line">        for (DataChangedListener listener : listeners) &#123;</span><br><span class="line">            switch (event.getGroupKey()) &#123;</span><br><span class="line">                case APP_AUTH:</span><br><span class="line">                    listener.onAppAuthChanged((List&lt;AppAuthData&gt;) event.getSource(), event.getEventType());</span><br><span class="line">                    break;</span><br><span class="line">                case PLUGIN:</span><br><span class="line">                    listener.onPluginChanged((List&lt;PluginData&gt;) event.getSource(), event.getEventType());</span><br><span class="line">                    break;</span><br><span class="line">                case RULE:</span><br><span class="line">                    listener.onRuleChanged((List&lt;RuleData&gt;) event.getSource(), event.getEventType());</span><br><span class="line">                    break;</span><br><span class="line">                case SELECTOR:</span><br><span class="line">                    listener.onSelectorChanged((List&lt;SelectorData&gt;) event.getSource(), event.getEventType());</span><br><span class="line">                    break;</span><br><span class="line">                case META_DATA:</span><br><span class="line">                    listener.onMetaDataChanged((List&lt;MetaData&gt;) event.getSource(), event.getEventType());</span><br><span class="line">                    break;</span><br><span class="line">                default:</span><br><span class="line">                    throw new IllegalStateException(&quot;Unexpected value: &quot; + event.getGroupKey());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void afterPropertiesSet() &#123;</span><br><span class="line">        Collection&lt;DataChangedListener&gt; listenerBeans = applicationContext.getBeansOfType(DataChangedListener.class).values();</span><br><span class="line">        this.listeners = Collections.unmodifiableList(new ArrayList&lt;&gt;(listenerBeans));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>匹配到对应的类型时，走了具体的监听事件，以selector的为例子，listener.onSelectorChanged，因为soul的数据同步，默认使用的时http长轮询来进行的，最终定位到了AbstractDataChangedListener.onSelectorChanged方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onSelectorChanged(final List&lt;SelectorData&gt; changed, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">    if (CollectionUtils.isEmpty(changed)) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    // 更新缓存</span><br><span class="line">    this.updateSelectorCache();</span><br><span class="line">    this.afterSelectorChanged(changed, eventType);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protected void afterSelectorChanged(final List&lt;SelectorData&gt; changed, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个afterSelectorChanged的方法默认是个空的实现，往下看具体实现，发现只有一个，就是HttpLongPollingDataChangedListener，实际执行长轮询同步数据的类（模版模式的再一次应用）。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">protected void afterSelectorChanged(final List&lt;SelectorData&gt; changed, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">    //调度执行任务</span><br><span class="line">        scheduler.execute(new DataChangeTask(ConfigGroupEnum.SELECTOR));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>看看这个实现了Runnable的DataChangeTask中的run方法干了什么，结合官方文档解释，长轮询策略下，soul-web请求admin，admin会将数据同步请求放入阻塞队列中延迟处理，如果60秒没有配置更新请求，会触发一次将队列头部元素出队进行处理，然后返回响应，如果有配置修改请求发生，会将队列中的所有请求出队依次处理响应给soul-web。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            for (Iterator&lt;LongPollingClient&gt; iter = clients.iterator(); iter.hasNext();) &#123;</span><br><span class="line">                LongPollingClient client = iter.next();</span><br><span class="line">                iter.remove();</span><br><span class="line">                client.sendResponse(Collections.singletonList(groupKey));</span><br><span class="line">                log.info(&quot;send response with the changed group,ip=&#123;&#125;, group=&#123;&#125;, changeTime=&#123;&#125;&quot;, client.ip, groupKey, changeTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>同样的，LongPollingClient也是个实现runnable的方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            this.asyncTimeoutFuture = scheduler.schedule(() -&gt; &#123;</span><br><span class="line">                // 出队响应</span><br><span class="line">                clients.remove(LongPollingClient.this);</span><br><span class="line">                List&lt;ConfigGroupEnum&gt; changedGroups = compareChangedGroup((HttpServletRequest) asyncContext.getRequest());</span><br><span class="line">                sendResponse(changedGroups);</span><br><span class="line">            &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">            clients.add(this);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>因为我们在使用@SoulSpringMvcClient注册我们的接口的时候，项目启动不需要进行同步操作，所以这里复用了响应方法，响应在一开始说的doRegister方法发出的请求。至此，项目启动时利用@SoulSpringMvcClient向网关注册接口的流程就走完了。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" rel="next" title="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-soul-web使用http长轮询策略同步配置原理解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" rel="prev" title="soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析">
+                soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MzM2Ny8xOTkwOA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Zhoutzzz">
+            
+              <p class="site-author-name" itemprop="name">Zhoutzzz</p>
+              <p class="site-description motion-element" itemprop="description">一枚Java Coder的个人学习基地</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Zhoutzzz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="925920668@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhoutzzz</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+
+</div>
+<!-- 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+ -->
+
+
+  <span class="post-meta-divider">|</span>
+
+<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+
+<!-- 
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+ -->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

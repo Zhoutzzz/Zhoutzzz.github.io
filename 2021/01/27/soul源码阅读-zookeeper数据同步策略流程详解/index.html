@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="网关,soul,Java,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+<meta name="description" content="前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存">
+<meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Z">
+<meta property="og:title" content="soul源码阅读-zookeeper数据同步策略流程详解">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+<meta property="og:description" content="前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-01-27T04:49:46.469Z">
+<meta property="og:updated_time" content="2021-01-27T05:13:57.394Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Z">
-<meta name="twitter:description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+<meta name="twitter:title" content="soul源码阅读-zookeeper数据同步策略流程详解">
+<meta name="twitter:description" content="前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存">
 
 
 
@@ -125,7 +126,7 @@
 
 
 
-  <title> | Z</title>
+  <title>soul源码阅读-zookeeper数据同步策略流程详解 | Z</title>
   
 
 
@@ -279,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">soul源码阅读-zookeeper数据同步策略流程详解</h1>
         
 
         <div class="post-meta">
@@ -291,7 +292,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:04:05+08:00">
                 2021-01-27
               </time>
             
@@ -301,6 +302,50 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -329,12 +374,12 @@
       
 
       
-        <h1 id="soul源码阅读-zookeeper数据同步策略流程详解"><a href="#soul源码阅读-zookeeper数据同步策略流程详解" class="headerlink" title="soul源码阅读-zookeeper数据同步策略流程详解"></a>soul源码阅读-zookeeper数据同步策略流程详解</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
 <li><p>这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。</p>
 </li>
 <li><blockquote>
 <p>依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存</p>
-</blockquote>
+<a id="more"></a></blockquote>
 </li>
 <li><p>我们画一下这个流程图：</p>
 </li>
@@ -383,6 +428,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
 
       
       
@@ -392,8 +445,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-sofa插件使用/" rel="next" title>
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/" rel="next" title="soul源码阅读-nacos数据同步策略流程详解">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-nacos数据同步策略流程详解
               </a>
             
           </div>
@@ -402,8 +455,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" rel="prev" title>
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" rel="prev" title="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析">
+                soul源码阅读-soul-web使用http长轮询策略同步配置原理解析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -488,7 +541,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -559,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读-zookeeper数据同步策略流程详解"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读-zookeeper数据同步策略流程详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#admin像zk发送数据"><span class="nav-number">1.2.</span> <span class="nav-text">admin像zk发送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web更新缓存"><span class="nav-number">1.3.</span> <span class="nav-text">web更新缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">1.4.</span> <span class="nav-text">结尾</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#admin像zk发送数据"><span class="nav-number">2.</span> <span class="nav-text">admin像zk发送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web更新缓存"><span class="nav-number">3.</span> <span class="nav-text">web更新缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">4.</span> <span class="nav-text">结尾</span></a></li></ol></div>
             
 
           </div>

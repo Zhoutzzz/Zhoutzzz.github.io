@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="网关,soul,Java,">
 
 
 
@@ -79,24 +79,25 @@
 
 
 
-<meta name="description" content="soul-dubbo例子使用运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处">
+<meta name="description" content="运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页">
+<meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Z">
+<meta property="og:title" content="soul-dubbo例子使用">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul-dubbo例子使用/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="soul-dubbo例子使用运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处">
+<meta property="og:description" content="运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01.png?x-oss-process=image%2Fresize%2Cw_1500">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810687415-ec7fc51f-391a-4a87-a589-2a82f59fe7f2.png?x-oss-process=image%2Fresize%2Cw_1500">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810831102-5c9247f2-0be8-4dd1-8d16-1eab56b8d56d.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810842067-4b88f22f-b94d-4939-aea7-01980f489456.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811693960-5b3289ef-8ca4-4e57-8008-a9e02728e197.png?x-oss-process=image%2Fresize%2Cw_1500">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811792007-3527f86d-2b21-4942-8415-2fefaea79ddd.png">
-<meta property="og:updated_time" content="2021-01-27T04:49:46.625Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01-20210127130101002.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810687415-ec7fc51f-391a-4a87-a589-2a82f59fe7f2-20210127130111776.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810831102-5c9247f2-0be8-4dd1-8d16-1eab56b8d56d-20210127130116360.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810842067-4b88f22f-b94d-4939-aea7-01980f489456-20210127130126483.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610811693960-5b3289ef-8ca4-4e57-8008-a9e02728e197-20210127130202014.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610811792007-3527f86d-2b21-4942-8415-2fefaea79ddd-20210127130155725.png">
+<meta property="og:updated_time" content="2021-01-27T05:07:09.208Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Z">
-<meta name="twitter:description" content="soul-dubbo例子使用运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处">
-<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01.png?x-oss-process=image%2Fresize%2Cw_1500">
+<meta name="twitter:title" content="soul-dubbo例子使用">
+<meta name="twitter:description" content="运行项目依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用@SoulDubboClient注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01-20210127130101002.png">
 
 
 
@@ -132,7 +133,7 @@
 
 
 
-  <title> | Z</title>
+  <title>soul-dubbo例子使用 | Z</title>
   
 
 
@@ -286,7 +287,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">soul-dubbo例子使用</h1>
         
 
         <div class="post-meta">
@@ -298,7 +299,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:05:37+08:00">
                 2021-01-27
               </time>
             
@@ -308,6 +309,50 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -336,7 +381,8 @@
       
 
       
-        <h1 id="soul-dubbo例子使用"><a href="#soul-dubbo例子使用" class="headerlink" title="soul-dubbo例子使用"></a>soul-dubbo例子使用</h1><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><p>依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用<strong>@SoulDubboClient</strong>注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页面进行操作。</p>
+        <h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><p>依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用<strong>@SoulDubboClient</strong>注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页面进行操作。</p>
+<a id="more"></a>
 <h3 id="访问网关"><a href="#访问网关" class="headerlink" title="访问网关"></a>访问网关</h3><ul>
 <li>因为网关作为所有流量的入口，我们此时配置好了网关管理的API之后，访问网关看看效果</li>
 </ul>
@@ -344,17 +390,17 @@
 <ul>
 <li>此时正确得到了结果，查看soul-bootstrap的日志，显示成功匹配了dubbo插件，网关成功对我们请求做了代理。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01-20210127130101002.png" alt="image.png"></p>
 <ul>
 <li>再来试试他的hystrix限流插件，将Netflix的hystrix以插件形式做了集成，首先打开插件，然后进行如下配置。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810687415-ec7fc51f-391a-4a87-a589-2a82f59fe7f2.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810831102-5c9247f2-0be8-4dd1-8d16-1eab56b8d56d.png" alt="image.png"><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810842067-4b88f22f-b94d-4939-aea7-01980f489456.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810687415-ec7fc51f-391a-4a87-a589-2a82f59fe7f2-20210127130111776.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810831102-5c9247f2-0be8-4dd1-8d16-1eab56b8d56d-20210127130116360.png" alt="image.png"><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610810842067-4b88f22f-b94d-4939-aea7-01980f489456-20210127130126483.png" alt="image.png"></p>
 <ul>
 <li>先将请求数限制为1，然后发起2个请求触发熔断后，去看日志提示已经打开了熔断器，并且此时在访问的时候，接口已经访问不到了。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811693960-5b3289ef-8ca4-4e57-8008-a9e02728e197.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811792007-3527f86d-2b21-4942-8415-2fefaea79ddd.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610811693960-5b3289ef-8ca4-4e57-8008-a9e02728e197-20210127130202014.png" alt="image.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1610811792007-3527f86d-2b21-4942-8415-2fefaea79ddd-20210127130155725.png" alt="image.png"></p>
 <p><strong>关于熔断器，也有一个疑问，如果**</strong>使用semaphore作为熔断器的时候，配置了fallbackURL，是不是意味着触发熔断时会去调用降级URL，同时这个降级的URL也会去拿semaphore，如果拿不到的话回调失败？**</p>
 
       
@@ -386,6 +432,14 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
 
       
       
@@ -395,8 +449,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-springCloud插件使用/" rel="next" title>
-                <i class="fa fa-chevron-left"></i> 
+              <a href="/2021/01/27/soul源码阅读-sofa插件使用/" rel="next" title="soul源码阅读-sofa插件使用">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-sofa插件使用
               </a>
             
           </div>
@@ -487,7 +541,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -558,7 +612,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul-dubbo例子使用"><span class="nav-number">1.</span> <span class="nav-text">soul-dubbo例子使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行项目"><span class="nav-number">1.0.1.</span> <span class="nav-text">运行项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问网关"><span class="nav-number">1.0.2.</span> <span class="nav-text">访问网关</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行项目"><span class="nav-number">1.</span> <span class="nav-text">运行项目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#访问网关"><span class="nav-number">2.</span> <span class="nav-text">访问网关</span></a></li></ol></div>
             
 
           </div>
