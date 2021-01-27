@@ -1,7 +1,10 @@
 ---
 title: soul源码解析环境搭建教程
 date: 2021-01-14 23:55:09
-tags: [网关, Java, soul]
+tags: 
+- [网关]
+- [soul]
+- [Java]
 copyright: ture
 categories: 
 - [网关, soul]

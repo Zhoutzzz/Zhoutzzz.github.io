@@ -2,7 +2,8 @@
 title: soul架构概述与http服务使用
 date: 2021-01-15 20:16:29
 tags: 
-- [网关, soul]
+- [网关]
+- [soul]
 - [Java]
 categories: 
 - [网关, soul]
