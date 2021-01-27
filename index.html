@@ -262,6 +262,1289 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul-dubbo例子使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul-dubbo例子使用/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul-dubbo例子使用"><a href="#soul-dubbo例子使用" class="headerlink" title="soul-dubbo例子使用"></a>soul-dubbo例子使用</h1><h3 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h3><p>依次启动soul-admin，soul-bootstrap，soul-examples-apache-dubbo-service三个服务，观察apache-dubbo的日志，启动的时候就会将配置的接口注册到网关中，项目中使用<strong>@SoulDubboClient</strong>注解定义了网关要代理的路径，注解本身，是利用Spring的beanPostProcesstor特性进行加工处理，当然也可以通过控制台在页面进行操作。</p>
+<h3 id="访问网关"><a href="#访问网关" class="headerlink" title="访问网关"></a>访问网关</h3><ul>
+<li>因为网关作为所有流量的入口，我们此时配置好了网关管理的API之后，访问网关看看效果</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localhost:9195/dubbo/findAll</span><br></pre></td></tr></table></figure>
+<ul>
+<li>此时正确得到了结果，查看soul-bootstrap的日志，显示成功匹配了dubbo插件，网关成功对我们请求做了代理。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810364234-6af00b34-301f-4bcd-a585-b08a52373b01.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<ul>
+<li>再来试试他的hystrix限流插件，将Netflix的hystrix以插件形式做了集成，首先打开插件，然后进行如下配置。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810687415-ec7fc51f-391a-4a87-a589-2a82f59fe7f2.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810831102-5c9247f2-0be8-4dd1-8d16-1eab56b8d56d.png" alt="image.png"><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610810842067-4b88f22f-b94d-4939-aea7-01980f489456.png" alt="image.png"></p>
+<ul>
+<li>先将请求数限制为1，然后发起2个请求触发熔断后，去看日志提示已经打开了熔断器，并且此时在访问的时候，接口已经访问不到了。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811693960-5b3289ef-8ca4-4e57-8008-a9e02728e197.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610811792007-3527f86d-2b21-4942-8415-2fefaea79ddd.png" alt="image.png"></p>
+<p><strong>关于熔断器，也有一个疑问，如果**</strong>使用semaphore作为熔断器的时候，配置了fallbackURL，是不是意味着触发熔断时会去调用降级URL，同时这个降级的URL也会去拿semaphore，如果拿不到的话回调失败？**</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-springCloud插件使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-springCloud插件使用/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-springCloud插件使用"><a href="#soul源码阅读-springCloud插件使用" class="headerlink" title="soul源码阅读-springCloud插件使用"></a>soul源码阅读-springCloud插件使用</h1><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><ul>
+<li>在soul-bootstarp的pom中，打开Spring cloud的依赖。</li>
+<li>参考官网介绍启动soul-admin、soul-bootstrap、eureka-server，再启动example下soul-examples-spring cloud</li>
+<li>日志显示spring cloud接口成功注册到了网关</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611074821933-1fb8b0f7-436f-4220-9621-bab5693c87d9.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<ul>
+<li>访问网关，成功拿到响应结果。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611152838523-134c6dde-9264-4fb5-ab9b-e698e7816362.png" alt="image.png"></p>
+<ul>
+<li>其实之前网关一直请求不到的，后来追溯源码，理清楚了插件调用过程，才发现，就是pom中spring cloud相关依赖没加。。。</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析"><a href="#soul源码阅读-soul-web使用http长轮询策略同步配置原理解析" class="headerlink" title="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析"></a>soul源码阅读-soul-web使用http长轮询策略同步配置原理解析</h1><ul>
+<li><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2></li>
+</ul>
+<ul>
+<li>在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。</li>
+<li>在官网的介绍里说了http长轮询的执行流程，web网关，会定时向admin发起数据同步的长轮询请求，而admin则在接受到请求后，使用servlet3.0的异步特性，先将请求放入一个阻塞队列ArrayBlockingQueue中保存，发生了数据变更时，会将队列中的所有任务出队依次处理并响应，如果超时，则将队列中的头部元素取出进行处理然后响应。</li>
+<li><p>既然是数据同步的策略，那具体的实现就应该在soul-sync-data-center中，http长轮询就应该对应soul-sync-data-http模块（soul的项目结构本身就设计的很好，并且命名规范，按照功能进行模块拆分，具体的功能点可以在对应的模块中找到，在加上阅读源码时的‘假设性原则’，定位到核心代码处更是分分钟的事情，再不济也能猜到入口，一步步debug）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png" alt="image.png"></p>
+<h2 id="soul-web长轮询初始化"><a href="#soul-web长轮询初始化" class="headerlink" title="soul-web长轮询初始化"></a>soul-web长轮询初始化</h2></li>
+<li><p>目录下的HttpSyncDataService，就是长轮询的发起点，refresh包中，则是对应的各个类型的数据具体的更新实现，在收到admin的响应后判断是否执行刷新。在HttpSyncDataService中，有一个属性证明了这就是长轮询同步的实现</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611321720728-f1164b8d-b1b7-4fc8-b009-d619805e40c2.png" alt="image.png"></p>
+</li>
+<li><p>默认http连接超时时间10s，下面是初始化相关的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public HttpSyncDataService(final HttpConfig httpConfig, final PluginDataSubscriber pluginDataSubscriber,</span><br><span class="line">                               final List&lt;MetaDataSubscriber&gt; metaDataSubscribers, final List&lt;AuthDataSubscriber&gt; authDataSubscribers) &#123;</span><br><span class="line">        this.factory = new DataRefreshFactory(pluginDataSubscriber, metaDataSubscribers, authDataSubscribers);</span><br><span class="line">        this.httpConfig = httpConfig;</span><br><span class="line">        this.serverList = Lists.newArrayList(Splitter.on(&quot;,&quot;).split(httpConfig.getUrl()));</span><br><span class="line">        this.httpClient = createRestTemplate();</span><br><span class="line">        this.start();</span><br><span class="line">    &#125;</span><br><span class="line">    // 定义restTemplate</span><br><span class="line">    private RestTemplate createRestTemplate() &#123;</span><br><span class="line">        OkHttp3ClientHttpRequestFactory factory = new OkHttp3ClientHttpRequestFactory();</span><br><span class="line">      // 10s连接超时</span><br><span class="line">        factory.setConnectTimeout((int) this.connectionTimeout.toMillis());</span><br><span class="line">      // 90s读取超时</span><br><span class="line">        factory.setReadTimeout((int) HttpConstants.CLIENT_POLLING_READ_TIMEOUT);</span><br><span class="line">        return new RestTemplate(factory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void start() &#123;</span><br><span class="line">        // It could be initialized multiple times, so you need to control that.</span><br><span class="line">      // 使用cas设置为true，表示需要进行一次同步</span><br><span class="line">        if (RUNNING.compareAndSet(false, true)) &#123;</span><br><span class="line">            // fetch all group configs. 先获取所有组的配置，更新缓存</span><br><span class="line">            this.fetchGroupConfig(ConfigGroupEnum.values());</span><br><span class="line">            int threadSize = serverList.size();</span><br><span class="line">          // 初始化执行长轮询任务的线程池</span><br><span class="line">            this.executor = new ThreadPoolExecutor(threadSize, threadSize, 60L, TimeUnit.SECONDS,</span><br><span class="line">                    new LinkedBlockingQueue&lt;&gt;(),</span><br><span class="line">                    SoulThreadFactory.create(&quot;http-long-polling&quot;, true));</span><br><span class="line">            // start long polling, each server creates a thread to listen for changes.</span><br><span class="line">          // 发起长轮询</span><br><span class="line">            this.serverList.forEach(server -&gt; this.executor.execute(new HttpLongPollingTask(server)));</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            log.info(&quot;soul http long polling was started, executor=[&#123;&#125;]&quot;, executor);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定时请求任务"><a href="#定时请求任务" class="headerlink" title="定时请求任务"></a>定时请求任务</h2></li>
+<li><p>初始化方法里，参数设定完成后启动长轮询任务，具体执行就在HttpLongPollingTask中了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">class HttpLongPollingTask implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">        private String server;</span><br><span class="line"></span><br><span class="line">        private final int retryTimes = 3;</span><br><span class="line"></span><br><span class="line">        HttpLongPollingTask(final String server) &#123;</span><br><span class="line">            this.server = server;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">          // 在初始化时启动的时候，就将状态设置为了true，无限循环调用，如果遇到异常，重试3次</span><br><span class="line">            while (RUNNING.get()) &#123;</span><br><span class="line">                for (int time = 1; time &lt;= retryTimes; time++) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                      // 发起长轮询请求</span><br><span class="line">                        doLongPolling(server);</span><br><span class="line">                    &#125; catch (Exception e) &#123;</span><br><span class="line">                        // print warnning log.</span><br><span class="line">                        if (time &lt; retryTimes) &#123;</span><br><span class="line">                            log.warn(&quot;Long polling failed, tried &#123;&#125; times, &#123;&#125; times left, will be suspended for a while! &#123;&#125;&quot;,</span><br><span class="line">                                    time, retryTimes - time, e.getMessage());</span><br><span class="line">                            ThreadUtils.sleep(TimeUnit.SECONDS, 5);</span><br><span class="line">                            continue;</span><br><span class="line">                        &#125;</span><br><span class="line">                        // print error, then suspended for a while.</span><br><span class="line">                        log.error(&quot;Long polling failed, try again after 5 minutes!&quot;, e);</span><br><span class="line">                        ThreadUtils.sleep(TimeUnit.MINUTES, 5);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            log.warn(&quot;Stop http long polling.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">private void doLongPolling(final String server) &#123;</span><br><span class="line">        MultiValueMap&lt;String, String&gt; params = new LinkedMultiValueMap&lt;&gt;(8);</span><br><span class="line">  // 因为soul中每个类型的数据，都有对应的md5进行标识，使用md5与类型关联，如果md5发生变动，表示需要进行同步</span><br><span class="line">        for (ConfigGroupEnum group : ConfigGroupEnum.values()) &#123;</span><br><span class="line">            ConfigData&lt;?&gt; cacheConfig = factory.cacheConfigData(group);</span><br><span class="line">            String value = String.join(&quot;,&quot;, cacheConfig.getMd5(), String.valueOf(cacheConfig.getLastModifyTime()));</span><br><span class="line">            params.put(group.name(), Lists.newArrayList(value));</span><br><span class="line">        &#125;</span><br><span class="line">        HttpHeaders headers = new HttpHeaders();</span><br><span class="line">        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</span><br><span class="line">        HttpEntity httpEntity = new HttpEntity(params, headers);</span><br><span class="line">  </span><br><span class="line">            // 具体admin监听接口path</span><br><span class="line">        String listenerUrl = server + &quot;/configs/listener&quot;;</span><br><span class="line">        log.debug(&quot;request listener configs: [&#123;&#125;]&quot;, listenerUrl);</span><br><span class="line">        JsonArray groupJson = null;</span><br><span class="line">        try &#123;</span><br><span class="line">          </span><br><span class="line">          // 向admin发起请求，admin是延迟响应，不会立刻响应，不然task无限请求服务器顶不住的</span><br><span class="line">            String json = this.httpClient.postForEntity(listenerUrl, httpEntity, String.class).getBody();</span><br><span class="line">            log.debug(&quot;listener result: [&#123;&#125;]&quot;, json);</span><br><span class="line">            groupJson = GSON.fromJson(json, JsonObject.class).getAsJsonArray(&quot;data&quot;);</span><br><span class="line">        &#125; catch (RestClientException e) &#123;</span><br><span class="line">            String message = String.format(&quot;listener configs fail, server:[%s], %s&quot;, server, e.getMessage());</span><br><span class="line">            throw new SoulException(message, e);</span><br><span class="line">        &#125;</span><br><span class="line">        if (groupJson != null) &#123;</span><br><span class="line">            // fetch group configuration async.</span><br><span class="line">          //admin响应之后，根据返回的结果判断是否需要进行配置更新，配置更新是异步进行</span><br><span class="line">            ConfigGroupEnum[] changedGroups = GSON.fromJson(groupJson, ConfigGroupEnum[].class);</span><br><span class="line">            if (ArrayUtils.isNotEmpty(changedGroups)) &#123;</span><br><span class="line">                log.info(&quot;Group config changed: &#123;&#125;&quot;, Arrays.toString(changedGroups));</span><br><span class="line">                this.doFetchGroupConfig(server, changedGroups);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="配置更新"><a href="#配置更新" class="headerlink" title="配置更新"></a>配置更新</h2></li>
+<li><p>具体的配置更新方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">private void doFetchGroupConfig(final String server, final ConfigGroupEnum... groups) &#123;</span><br><span class="line">        StringBuilder params = new StringBuilder();</span><br><span class="line">        for (ConfigGroupEnum groupKey : groups) &#123;</span><br><span class="line">            params.append(&quot;groupKeys&quot;).append(&quot;=&quot;).append(groupKey.name()).append(&quot;&amp;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">            // admin获取配置的path</span><br><span class="line">        String url = server + &quot;/configs/fetch?&quot; + StringUtils.removeEnd(params.toString(), &quot;&amp;&quot;);</span><br><span class="line">        log.info(&quot;request configs: [&#123;&#125;]&quot;, url);</span><br><span class="line">        String json = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            json = this.httpClient.getForObject(url, String.class);</span><br><span class="line">        &#125; catch (RestClientException e) &#123;</span><br><span class="line">            String message = String.format(&quot;fetch config fail from server[%s], %s&quot;, url, e.getMessage());</span><br><span class="line">            log.warn(message);</span><br><span class="line">            throw new SoulException(message, e);</span><br><span class="line">        &#125;</span><br><span class="line">        // update local cache</span><br><span class="line">        boolean updated = this.updateCacheWithJson(json);</span><br><span class="line">        if (updated) &#123;</span><br><span class="line">            log.info(&quot;get latest configs: [&#123;&#125;]&quot;, json);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        // not updated. it is likely that the current config server has not been updated yet. wait a moment.</span><br><span class="line">  // 这里等待30s再次监听，不等待也可能导致一直向admin请求，耗空资源</span><br><span class="line">        log.info(&quot;The config of the server[&#123;&#125;] has not been updated or is out of date. Wait for 30s to listen for changes again.&quot;, server);</span><br><span class="line">        ThreadUtils.sleep(TimeUnit.SECONDS, 30);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * update local cache.</span><br><span class="line">     * @param json the response from config server.</span><br><span class="line">     * @return true: the local cache was updated. false: not updated.</span><br><span class="line">     */</span><br><span class="line">    private boolean updateCacheWithJson(final String json) &#123;</span><br><span class="line">        JsonObject jsonObject = GSON.fromJson(json, JsonObject.class);</span><br><span class="line">        JsonObject data = jsonObject.getAsJsonObject(&quot;data&quot;);</span><br><span class="line">        // if the config cache will be updated?</span><br><span class="line">        return factory.executor(data);</span><br><span class="line">    &#125;</span><br><span class="line">// 具体的executor</span><br><span class="line">public boolean executor(final JsonObject data) &#123;</span><br><span class="line">  设置默认值false，否则调用这个方法如果返回true，也会引发资源耗尽的问题</span><br><span class="line">        final boolean[] success = &#123;false&#125;;</span><br><span class="line">        ENUM_MAP.values().parallelStream().forEach(dataRefresh -&gt; success[0] = dataRefresh.refresh(data));</span><br><span class="line">        return success[0];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="soul-admin接收"><a href="#soul-admin接收" class="headerlink" title="soul-admin接收"></a>soul-admin接收</h2></li>
+<li><p>到这里，web的长轮询具体逻辑就完成了，接下来就是看请求发送到admin之后admin怎么处理了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * This Controller only when HttpLongPollingDataChangedListener exist, will take effect.</span><br><span class="line"> 这个controller只有当长轮询策略生效的时候才会加载。</span><br><span class="line"> *</span><br><span class="line"> * @author huangxiaofeng</span><br><span class="line"> * @author xiaoyu</span><br><span class="line"> */</span><br><span class="line">@ConditionalOnBean(HttpLongPollingDataChangedListener.class)</span><br><span class="line">@RestController</span><br><span class="line">@RequestMapping(&quot;/configs&quot;)</span><br><span class="line">@Slf4j</span><br><span class="line">public class ConfigController &#123;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>看看接口里面的2个方法,/fetch和/listener正好与前面代码中配置的路径对应上了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/fetch&quot;)</span><br><span class="line">    public SoulAdminResult fetchConfigs(@NotNull final String[] groupKeys) &#123;</span><br><span class="line">        Map&lt;String, ConfigData&lt;?&gt;&gt; result = Maps.newHashMap();</span><br><span class="line">        for (String groupKey : groupKeys) &#123;</span><br><span class="line">            ConfigData&lt;?&gt; data = longPollingListener.fetchConfig(ConfigGroupEnum.valueOf(groupKey));</span><br><span class="line">            result.put(groupKey, data);</span><br><span class="line">        &#125;</span><br><span class="line">        return SoulAdminResult.success(SoulResultMessage.SUCCESS, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Listener.</span><br><span class="line">     *</span><br><span class="line">     * @param request  the request</span><br><span class="line">     * @param response the response</span><br><span class="line">     */</span><br><span class="line">    @PostMapping(value = &quot;/listener&quot;)</span><br><span class="line">    public void listener(final HttpServletRequest request, final HttpServletResponse response) &#123;</span><br><span class="line">        longPollingListener.doLongPolling(request, response);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="任务处理"><a href="#任务处理" class="headerlink" title="任务处理"></a>任务处理</h2></li>
+<li><p>我们看看对应的fetchConfig和doLongPolling方法具体内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">// If the configuration data changes, the group information for the change is immediately responded.</span><br><span class="line">    // Otherwise, the client&apos;s request thread is blocked until any data changes or the specified timeout is reached.</span><br><span class="line">    </span><br><span class="line">    //这个方法头上注解说明了，如果配置数据有更改，对应类型的信息会被立刻包装为response响应给web发起的http请求，否则客户端的请求线程会阻塞知道数据发生更改或者超时，源码内部将请求的超时时间设为60s，也就是说，如果我们在admin进行配置修改，会立马对web发出的长轮询作出响应，不然就这边等60s，这也就是web那根据atomicBoolean的状态不会无限请求的原因。</span><br><span class="line">public void doLongPolling(final HttpServletRequest request, final HttpServletResponse response) &#123;</span><br><span class="line"></span><br><span class="line">        // compare group md5 实际判断方式是比较类型的md5，只要有任意类型被修改了，这个list都不会为空，就会立刻响应</span><br><span class="line">        List&lt;ConfigGroupEnum&gt; changedGroup = compareChangedGroup(request);</span><br><span class="line">        String clientIp = getRemoteIp(request);</span><br><span class="line"></span><br><span class="line">        // response immediately.</span><br><span class="line">        if (CollectionUtils.isNotEmpty(changedGroup)) &#123;</span><br><span class="line">            this.generateResponse(response, changedGroup);</span><br><span class="line">            log.info(&quot;send response with the changed group, ip=&#123;&#125;, group=&#123;&#125;&quot;, clientIp, changedGroup);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // listen for configuration changed. 使用异步方式进行监听</span><br><span class="line">        final AsyncContext asyncContext = request.startAsync();</span><br><span class="line"></span><br><span class="line">        // AsyncContext.settimeout() does not timeout properly, so you have to control it yourself</span><br><span class="line">        asyncContext.setTimeout(0L);</span><br><span class="line"></span><br><span class="line">        // block client&apos;s thread.</span><br><span class="line">        scheduler.execute(new LongPollingClient(asyncContext, clientIp, </span><br><span class="line">        // 具体的超时枚举</span><br><span class="line">        HttpConstants.SERVER_MAX_HOLD_TIMEOUT));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最终将web的请求，放入调度线程池异步执行，在分析@SoulSpringMvcClient注解注册流程的时候也提到过这个实现了runnable的任务类，具体的任务方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">  // 定义调度线程池调度执行时的具体方法，在调度线程池执行的时候，创建新的runnable来执行，将阻塞队列中的头部任务出队，然后比较数据，发送响应</span><br><span class="line">            this.asyncTimeoutFuture = scheduler.schedule(() -&gt; &#123;</span><br><span class="line">                clients.remove(LongPollingClient.this);</span><br><span class="line">                List&lt;ConfigGroupEnum&gt; changedGroups = compareChangedGroup((HttpServletRequest) asyncContext.getRequest());</span><br><span class="line">                sendResponse(changedGroups);</span><br><span class="line">            &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">  // 直接将当前任务加入队列。</span><br><span class="line">            clients.add(this);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>LongPollingClient的run方法在发送响应的时候，会根据changedGroup来生成响应数据，如果这个changedGroup元素为0，生成的响应数据是“[{}]”，如果有数据，就会将对应数据解析为json响应，之前说doLongPolling方法的时候，就解释了对于响应的数据会做何种处理，如果不需要更新就重新发起90秒的任务，如果需要更新，这时候web就会去根据访问/listener接口得到的具体的group数据，调用/fetch获取对应的配置进行更新。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 根据枚举选择对应的group从缓存中拿出数据返回。</span><br><span class="line"></span><br><span class="line">public ConfigData&lt;?&gt; fetchConfig(final ConfigGroupEnum groupKey) &#123;</span><br><span class="line">        ConfigDataCache config = CACHE.get(groupKey.name());</span><br><span class="line">        switch (groupKey) &#123;</span><br><span class="line">            case APP_AUTH:</span><br><span class="line">                List&lt;AppAuthData&gt; appAuthList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;AppAuthData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), appAuthList);</span><br><span class="line">            case PLUGIN:</span><br><span class="line">                List&lt;PluginData&gt; pluginList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;PluginData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), pluginList);</span><br><span class="line">            case RULE:</span><br><span class="line">                List&lt;RuleData&gt; ruleList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;RuleData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), ruleList);</span><br><span class="line">            case SELECTOR:</span><br><span class="line">                List&lt;SelectorData&gt; selectorList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;SelectorData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), selectorList);</span><br><span class="line">            case META_DATA:</span><br><span class="line">                List&lt;MetaData&gt; metaList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;MetaData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), metaList);</span><br><span class="line">            default:</span><br><span class="line">                throw new IllegalStateException(&quot;Unexpected groupKey: &quot; + groupKey);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>感觉这怎么跟官网上面说的有点不太符合，数据发生变动，为什么就请求接口从缓存拿数据了，不是会把前面的任务队列中的任务全部出队然后处理并响应么。因为当web请求过来之后被保存到了队列中，配置在admin的控制台修改之后，会触发监听，而监听会根据具体的配置修改的类型将修改事件分发到不同的事件处理器中，在事件处理器中会更新admin的缓存数据，同时让任务队列执行DataChangeTask任务，在DataChangeTask中具体的方法如下，admin修改配置后具体的数据同步逻辑，在讲解@SoulSpringMvcClient的文章后半部分中已经说明。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">  // 将队列中的任务循环取出后挨个发送它们对应的响应。</span><br><span class="line">            for (Iterator&lt;LongPollingClient&gt; iter = clients.iterator(); iter.hasNext();) &#123;</span><br><span class="line">                LongPollingClient client = iter.next();</span><br><span class="line">                iter.remove();</span><br><span class="line">                client.sendResponse(Collections.singletonList(groupKey));</span><br><span class="line">                log.info(&quot;send response with the changed group,ip=&#123;&#125;, group=&#123;&#125;, changeTime=&#123;&#125;&quot;, client.ip, groupKey, changeTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>到此这个http长轮询策略具体流程就和官方文章中介绍的一致了，最后画个图理一理它的整个同步流程<img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611330594826-6808f987-e16b-416f-a9cc-d904763d3298.png" alt="未命名文件.png"></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">admin[admin启动向nacos中发送数据] --&gt; nacos[nacos]</span><br><span class="line">web[web启动时从nacos中拿取数据更新本地缓存] --&gt;nacos[nacos]</span><br><span class="line"></span><br><span class="line">nacos1[nacos中的数据发生更改,发送更改数据到web] --&gt; web1[web]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为目前版本admin中的nacos数据同步，没有在启动时将数据同步到nacos中，所以目前来说，nacos数据同步方案在启动的时候需要手动进行同步，关于nacos同步策略的使用以及可能遇到的坑，可以参考<a href="https://juejin.cn/post/6921170233868845064" target="_blank" rel="noopener">Soul网关源码阅读（十六）Nacos数据同步示例运行</a></p>
+</li>
+</ul>
+<h2 id="Admin同步数据到Nacos"><a href="#Admin同步数据到Nacos" class="headerlink" title="Admin同步数据到Nacos"></a>Admin同步数据到Nacos</h2><ul>
+<li>首先,我们启动admin因为没有把数据同步到nacos，我们可以手动同步的同时观察admin同步数据到nacos的流程，结合前面的文章介绍，我们知道在admin中soul的数据同步是使用SpringEventPublisher将同步事件分发到DataChangedEventDispatcher监听器之后，再根据配置的同步策略和数据类型进行具体的同步处理</li>
+<li>实际进行处理的是NacosDataChangedListener，里面各个数据同步的具体方式基本一致，随便挑一个(AppAuth的数据修改)来做说明</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">// 更新appAuth的主体</span><br><span class="line">    public void onAppAuthChanged(final List&lt;AppAuthData&gt; changed, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">      // 首先从nacos拿到配置数据，然后更新AuthMap缓存</span><br><span class="line">        updateAuthMap(getConfig(AUTH_DATA_ID));</span><br><span class="line">     // 根据eventType执行具体策略</span><br><span class="line">        switch (eventType) &#123;</span><br><span class="line">            case DELETE:</span><br><span class="line">                changed.forEach(appAuth -&gt; AUTH_MAP.remove(appAuth.getAppKey()));</span><br><span class="line">                break;</span><br><span class="line">            case REFRESH:</span><br><span class="line">            case MYSELF:</span><br><span class="line">                Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">                changed.forEach(appAuth -&gt; &#123;</span><br><span class="line">                    set.remove(appAuth.getAppKey());</span><br><span class="line">                    AUTH_MAP.put(appAuth.getAppKey(), appAuth);</span><br><span class="line">                &#125;);</span><br><span class="line">                AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                changed.forEach(appAuth -&gt; AUTH_MAP.put(appAuth.getAppKey(), appAuth));</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">        publishConfig(AUTH_DATA_ID, AUTH_MAP);</span><br><span class="line">    &#125;</span><br><span class="line">// 从nacos中获取配置</span><br><span class="line">private String getConfig(final String dataId) &#123;</span><br><span class="line">        String config = configService.getConfig(dataId, GROUP, 6000);</span><br><span class="line">        return StringUtils.hasLength(config) ? config : EMPTY_CONFIG_DEFAULT_VALUE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">// 更新缓存</span><br><span class="line">private void updateAuthMap(final String configInfo) &#123;</span><br><span class="line">        JsonObject jo = GsonUtils.getInstance().fromJson(configInfo, JsonObject.class);</span><br><span class="line">        Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">        for (Entry&lt;String, JsonElement&gt; e : jo.entrySet()) &#123;</span><br><span class="line">            set.remove(e.getKey());</span><br><span class="line">            AUTH_MAP.put(e.getKey(), GsonUtils.getInstance().fromJson(e.getValue(), AppAuthData.class));</span><br><span class="line">        &#125;</span><br><span class="line">        AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">// 将新的配置数据重新发布到nacos</span><br><span class="line">private void publishConfig(final String dataId, final Object data) &#123;</span><br><span class="line">        configService.publishConfig(dataId, GROUP, GsonUtils.getInstance().toJson(data));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ul>
+<li>整体的发布流程就是这样：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">ctrl[xxxController] --&gt; ser[xxxService]</span><br><span class="line">ser --&gt; pub[SpringEventPublish]</span><br><span class="line">pub --&gt; dispatch[DataChangedEventDispatcher]</span><br><span class="line">dispatch --&gt; listen[NacosDataChangedListener]</span><br><span class="line">listen --&gt; nacos[ConfigServer#publishConfig]</span><br></pre></td></tr></table></figure>
+<h2 id="Bootstrap从Nacos同步数据"><a href="#Bootstrap从Nacos同步数据" class="headerlink" title="Bootstrap从Nacos同步数据"></a>Bootstrap从Nacos同步数据</h2><ul>
+<li>在admin修改的数据被同步到nacos后，利用nacos的监听机制，nacos在发生数据变更，会向bootstrap发送修改的数据，接下来看看在bootstrap中，接收到nacos的数据后的具体处理流程，首先把bootstrap的同步配置改为nacos</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">soul: </span><br><span class="line">    sync: </span><br><span class="line">        nacos:</span><br><span class="line">            url: localhost:8848</span><br><span class="line">            namespace: 1c10d748-af86-43b9-8265-75f487d20c6c</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们把bootstrap的数据同步配置改为nacos之后，在bootstrap启动时，会注册一个nacos的监听，用于监听nacos发送的请求，而注册这个nacos监听的位置在NacosCacheHandler#watcherData之中，但是，实际上调用到这个方法，是在NacosSyncDataService里面调用，我们看下二者关系。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png" alt="image.png"></p>
+<ul>
+<li>NacosSyncDataService继承了NacosCacheHandler，而在NacosSyncDataService的start方法里是这么写的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public void start() &#123;</span><br><span class="line">    watcherData(PLUGIN_DATA_ID, this::updatePluginMap);</span><br><span class="line">    watcherData(SELECTOR_DATA_ID, this::updateSelectorMap);</span><br><span class="line">    watcherData(RULE_DATA_ID, this::updateRuleMap);</span><br><span class="line">    watcherData(META_DATA_ID, this::updateMetaDataMap);</span><br><span class="line">    watcherData(AUTH_DATA_ID, this::updateAuthMap);</span><br><span class="line">  /*</span><br><span class="line">   watcherData(AUTH_DATA_ID, this::updateAuthMap);完整写法如下：</span><br><span class="line">   </span><br><span class="line">    watcherData(AUTH_DATA_ID, new OnChange() &#123;</span><br><span class="line">        void change(String changeData) &#123;</span><br><span class="line">        this.updateAuthMap();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在watcherData中就进行了nacos的Listener注册操作</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">protected void watcherData(final String dataId, final OnChange oc) &#123;</span><br><span class="line">  // 每当nacos有变动，就会触发这个Listener，而listener中receiveConfigInfo会实际执行我们之前实例化的匿名对象，最终执行对应的updatexxxMap方法</span><br><span class="line">        Listener listener = new Listener() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void receiveConfigInfo(final String configInfo) &#123;</span><br><span class="line">                oc.change(configInfo);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public Executor getExecutor() &#123;</span><br><span class="line">                return null;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">  // 一开始启动的时候，nacos并没有数据变动，所以第一次要主动向nacos请求拿取数据进行同步</span><br><span class="line">        oc.change(getConfigAndSignListener(dataId, listener));</span><br><span class="line">        LISTENERS.getOrDefault(dataId, new ArrayList&lt;&gt;()).add(listener);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>等到有数据来了，执行对应的updatexxxMap方法，我们以updatePluginMap为例，看下具体实现</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">protected void updatePluginMap(final String configInfo) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">          // 实际上里面只做了一件事情，取消旧数据的订阅，在重新订阅当前数据</span><br><span class="line">            // Fix bug #656(https://github.com/dromara/soul/issues/656)</span><br><span class="line">            List&lt;PluginData&gt; pluginDataList = new ArrayList&lt;&gt;(GsonUtils.getInstance().toObjectMap(configInfo, PluginData.class).values());</span><br><span class="line">            pluginDataList.forEach(pluginData -&gt; Optional.ofNullable(pluginDataSubscriber).ifPresent(subscriber -&gt; &#123;</span><br><span class="line">                subscriber.unSubscribe(pluginData);</span><br><span class="line">                subscriber.onSubscribe(pluginData);</span><br><span class="line">            &#125;));</span><br><span class="line">        &#125; catch (JsonParseException e) &#123;</span><br><span class="line">            log.error(&quot;sync plugin data have error:&quot;, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里面的关键点pluginDataSubscriber，其类型为PluginDataSubscriber。而这个PluginDataSubscriber的唯一实现则是CommonPluginDataSubscriber，所以实际上调用的是CommonPluginDataSubscriber#unSubscribe和CommonPluginDataSubscriber#onSubscribe方法，这个CommonPluginDataSubscriber，之前数据同步相关文章也提及过，在bootstrap进行数据处理的时候，这是公共的处理bootstrap内本地缓存的地方，<strong>根据不同的数据类型和不同的数据操作类型，选择具体的处理器进行对应缓存更新处理，而具体的处理器，都实现了PluginDataHandler接口，但是并没有重写PluginDataHandler中的所有方法，因此在具体的处理过程中也许会使用默认实现，具体要看数据类型所对应的处理器</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private &lt;T&gt; void subscribeDataHandler(final T classData, final DataEventTypeEnum dataType) &#123;</span><br><span class="line">        Optional.ofNullable(classData).ifPresent(data -&gt; &#123;</span><br><span class="line">          // 操作类型和数据类型判断</span><br><span class="line">            if (data instanceof PluginData) &#123;</span><br><span class="line">                PluginData pluginData = (PluginData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                  //更新本地缓存</span><br><span class="line">                    BaseDataCache.getInstance().cachePluginData(pluginData);</span><br><span class="line">                  // 更新具体的处理器进行处理。</span><br><span class="line">                  Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.handlerPlugin(pluginData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.removePlugin(pluginData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          ......</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当此处数据处理完成之后，一次数据同步就完成了，再来看下bootstrap进行数据同步的流程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">nacos[Nacos发送数据] --&gt; recv[bootstrap注册的监听Listener收到请求]</span><br><span class="line">recv --&gt; send[将数据发送给CommonPluginDataSubscriber]</span><br><span class="line">send --&gt; choose[在subscribeDataHandler方法根据对应数据类型和操作类型选择处理器]</span><br><span class="line">choose --&gt; finish[在处理器中更新缓存后,完成同步]</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>整个nacos的同步流程大致就介绍完成了，其中有个点比较费解，在NacosDataChangedListener中，将Auth修改的数据发送到nacos之前会执行这样的代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void updateAuthMap(final String configInfo) &#123;</span><br><span class="line">        JsonObject jo = GsonUtils.getInstance().fromJson(configInfo, JsonObject.class);</span><br><span class="line">        Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">        for (Entry&lt;String, JsonElement&gt; e : jo.entrySet()) &#123;</span><br><span class="line">            set.remove(e.getKey());</span><br><span class="line">            AUTH_MAP.put(e.getKey(), GsonUtils.getInstance().fromJson(e.getValue(), AppAuthData.class));</span><br><span class="line">        &#125;</span><br><span class="line">        AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>不明白这样写的目的是什么，因为在执行这个更新操作之前，在admin修改了数据之后，controller到service只是先存入了数据库，然后调用Spring Publisher把数据发送到对应的listener进行修改，此时本地缓存和nacos中还是老的数据，如果要更新缓存和nacos，需要先执行上面的代码，但是上面代码的configInfo是从nacos中拿取的老数据，AUTH_MAP中也是老数据，两个老数据这样操作，不是等于没操作么？？？🤷‍♂️</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-soul-web使用websocket策略同步配置原理解析"><a href="#soul源码阅读-soul-web使用websocket策略同步配置原理解析" class="headerlink" title="soul源码阅读-soul-web使用websocket策略同步配置原理解析"></a>soul源码阅读-soul-web使用websocket策略同步配置原理解析</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>在之前的文章中说到了soul的http长轮询数据同步策略，这次说一下另一个跟http有点关系的同步策略websocket，websocket策略与长轮询相反，<strong>它是admin主动向网关push数据</strong>，在官网的文章中，也介绍了websocket的同步原理，结合官网的文章看一下websocket的整体同步流程。</li>
+</ul>
+<h2 id="连接建立"><a href="#连接建立" class="headerlink" title="连接建立"></a>连接建立</h2><p>在我们将网关同步策略配置为websocket后，启动项目，加载我们在网关配置的同步策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">soul :</span><br><span class="line">    sync:</span><br><span class="line">    websocket :</span><br><span class="line">        urls: ws://localhost:9095/websocket # 如果是网关集群，这里可以配置多个，用&apos;,&apos;分割，比如ws://localhost:9095/websocket，ws://localhost:9096/websocket</span><br></pre></td></tr></table></figure>
+<p>之后会向目标地址建立websocket连接，在建立websocket连接的时候，会对每个连接设置30s间隔的断线重连，具体代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">public WebsocketSyncDataService(final WebsocketConfig websocketConfig,</span><br><span class="line">                                    final PluginDataSubscriber pluginDataSubscriber,</span><br><span class="line">                                    final List&lt;MetaDataSubscriber&gt; metaDataSubscribers,</span><br><span class="line">                                    final List&lt;AuthDataSubscriber&gt; authDataSubscribers) &#123;</span><br><span class="line">            // 解析url，根据url的数量，创建对应的守护调度线程</span><br><span class="line">        String[] urls = StringUtils.split(websocketConfig.getUrls(), &quot;,&quot;);</span><br><span class="line">        executor = new ScheduledThreadPoolExecutor(urls.length, SoulThreadFactory.create(&quot;websocket-connect&quot;, true));</span><br><span class="line">        for (String url : urls) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                clients.add(new SoulWebsocketClient(new URI(url), Objects.requireNonNull(pluginDataSubscriber), metaDataSubscribers, authDataSubscribers));</span><br><span class="line">            &#125; catch (URISyntaxException e) &#123;</span><br><span class="line">                log.error(&quot;websocket url(&#123;&#125;) is error&quot;, url, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        try &#123;</span><br><span class="line">          // 对每个连接都设置同步阻塞方式，30s超时时间</span><br><span class="line">            for (WebSocketClient client : clients) &#123;</span><br><span class="line">                boolean success = client.connectBlocking(3000, TimeUnit.MILLISECONDS);</span><br><span class="line">                if (success) &#123;</span><br><span class="line">                    log.info(&quot;websocket connection is successful.....&quot;);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    log.error(&quot;websocket connection is error.....&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">              // 连接成功后，每30s检查一下心跳</span><br><span class="line">                executor.scheduleAtFixedRate(() -&gt; &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        if (client.isClosed()) &#123;</span><br><span class="line">                            boolean reconnectSuccess = client.reconnectBlocking();</span><br><span class="line">                            if (reconnectSuccess) &#123;</span><br><span class="line">                                log.info(&quot;websocket reconnect is successful.....&quot;);</span><br><span class="line">                            &#125; else &#123;</span><br><span class="line">                                log.error(&quot;websocket reconnection is error.....&quot;);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        log.error(&quot;websocket connect is error :&#123;&#125;&quot;, e.getMessage());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, 10, 30, TimeUnit.SECONDS);</span><br><span class="line">            &#125;</span><br><span class="line">            /* client.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(&quot;proxyaddress&quot;, 80)));*/</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            log.info(&quot;websocket connection...exception....&quot;, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="主动Push"><a href="#主动Push" class="headerlink" title="主动Push"></a>主动Push</h2><ul>
+<li>此时web与admin的连接就建立完成了，只需要等待admin发生修改操作，将数据push到web更新本地缓存就好，我们来看看admin的push过程，以及web收到通知后的操作，在admin修改一个配置提交,定位到PluginServiceImpl#createOrUpdate方法。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public String createOrUpdate(final PluginDTO pluginDTO) &#123;</span><br><span class="line">        final String msg = checkData(pluginDTO);</span><br><span class="line">        if (StringUtils.isNoneBlank(msg)) &#123;</span><br><span class="line">            return msg;</span><br><span class="line">        &#125;</span><br><span class="line">        PluginDO pluginDO = PluginDO.buildPluginDO(pluginDTO);</span><br><span class="line">        DataEventTypeEnum eventType = DataEventTypeEnum.CREATE;</span><br><span class="line">        if (StringUtils.isBlank(pluginDTO.getId())) &#123;</span><br><span class="line">            pluginMapper.insertSelective(pluginDO);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            eventType = DataEventTypeEnum.UPDATE;</span><br><span class="line">            pluginMapper.updateSelective(pluginDO);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // publish change event.</span><br><span class="line">        eventPublisher.publishEvent(new DataChangedEvent(ConfigGroupEnum.PLUGIN, eventType,</span><br><span class="line">                Collections.singletonList(PluginTransfer.INSTANCE.mapToData(pluginDO))));</span><br><span class="line">        return StringUtils.EMPTY;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在admin中，与其他的数据同步策略处理一样，都是通过Spring事件发布机制处理，看下最终通过DataChangedEventDispatcher定位到的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void onPluginChanged(final List&lt;PluginData&gt; pluginDataList, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">        WebsocketData&lt;PluginData&gt; websocketData =</span><br><span class="line">                new WebsocketData&lt;&gt;(ConfigGroupEnum.PLUGIN.name(), eventType.name(), pluginDataList);</span><br><span class="line">        WebsocketCollector.send(GsonUtils.getInstance().toJson(websocketData), eventType);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通过listener定位到了websocketDataChangedListener中，之后通过WebsocketCollector#send方法发送数据，看看WebsocketCollector#send方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public static void send(final String message, final DataEventTypeEnum type) &#123;</span><br><span class="line">        if (StringUtils.isNotBlank(message)) &#123;</span><br><span class="line">            if (DataEventTypeEnum.MYSELF == type) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    Session session = (Session) ThreadLocalUtil.get(SESSION_KEY);</span><br><span class="line">                    if (session != null) &#123;</span><br><span class="line">                        session.getBasicRemote().sendText(message);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    log.error(&quot;websocket send result is exception: &quot;, e);</span><br><span class="line">                &#125;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            for (Session session : SESSION_SET) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    session.getBasicRemote().sendText(message);</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    log.error(&quot;websocket send result is exception: &quot;, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在admin通过websocket发送之后，SoulWebsocketClient#onMessage接收数据最终在handleResult方法进行处理</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private void handleResult(final String result) &#123;</span><br><span class="line">  // json反序列化之后，获取到configGroup和eventType事件类型最终进行处理</span><br><span class="line">        WebsocketData websocketData = GsonUtils.getInstance().fromJson(result, WebsocketData.class);</span><br><span class="line">        ConfigGroupEnum groupEnum = ConfigGroupEnum.acquireByName(websocketData.getGroupType());</span><br><span class="line">        String eventType = websocketData.getEventType();</span><br><span class="line">        String json = GsonUtils.getInstance().toJson(websocketData.getData());</span><br><span class="line">        websocketDataHandler.executor(groupEnum, json, eventType);</span><br><span class="line">    &#125;</span><br><span class="line">// WebsocketDataHandler#executor</span><br><span class="line">public void executor(final ConfigGroupEnum type, final String json, final String eventType) &#123;</span><br><span class="line">        ENUM_MAP.get(type).handle(json, eventType);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后定位到了AbstractDataHandler中的handle方法（又是一个运用了模版模式的地方）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public void handle(final String json, final String eventType) &#123;</span><br><span class="line">  // 解析json后根据不同的具体实现类和eventType，定位到具体的实现类中进行执行</span><br><span class="line">        List&lt;T&gt; dataList = convert(json);</span><br><span class="line">        if (CollectionUtils.isNotEmpty(dataList)) &#123;</span><br><span class="line">            DataEventTypeEnum eventTypeEnum = DataEventTypeEnum.acquireByName(eventType);</span><br><span class="line">            switch (eventTypeEnum) &#123;</span><br><span class="line">                case REFRESH:</span><br><span class="line">                case MYSELF:</span><br><span class="line">                    doRefresh(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                case UPDATE:</span><br><span class="line">                case CREATE:</span><br><span class="line">                    doUpdate(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                case DELETE:</span><br><span class="line">                    doDelete(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                default:</span><br><span class="line">                    break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们修改插件，因此是Plugin类型，最终定位到了PluginDataHandler#doUpdate方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">protected void doUpdate(final List&lt;PluginData&gt; dataList) &#123;</span><br><span class="line">  // 就一行代码，依次订阅，而具体查看这个onSubscribe方法时，PluginDataSubscriber就只有一个具体实现CommonPluginDataSubscriber，最终会定位到CommonPluginDataSubscriber的具体实现中</span><br><span class="line">        dataList.forEach(pluginDataSubscriber::onSubscribe);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">//CommonPluginDataSubscriber</span><br><span class="line">//逻辑上处理也相对简单，判断事件类型，更新对应类型的缓存</span><br><span class="line">//每个分支下面都用到了BaseDataCache，见名知意，网关里面各种插件数据类型的数据都缓存在这里了。</span><br><span class="line">//之后的handler.xxx方法，其实就是对应的数据类型的处理器了，接口里面大多使用了默认实现，具体处理器实现接口根据需要进行重写</span><br><span class="line">private &lt;T&gt; void subscribeDataHandler(final T classData, final DataEventTypeEnum dataType) &#123;</span><br><span class="line">        Optional.ofNullable(classData).ifPresent(data -&gt; &#123;</span><br><span class="line">            if (data instanceof PluginData) &#123;</span><br><span class="line">                PluginData pluginData = (PluginData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cachePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.handlerPlugin(pluginData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.removePlugin(pluginData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else if (data instanceof SelectorData) &#123;</span><br><span class="line">                SelectorData selectorData = (SelectorData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cacheSelectData(selectorData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(selectorData.getPluginName())).ifPresent(handler -&gt; handler.handlerSelector(selectorData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removeSelectData(selectorData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(selectorData.getPluginName())).ifPresent(handler -&gt; handler.removeSelector(selectorData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else if (data instanceof RuleData) &#123;</span><br><span class="line">                RuleData ruleData = (RuleData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cacheRuleData(ruleData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(ruleData.getPluginName())).ifPresent(handler -&gt; handler.handlerRule(ruleData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removeRuleData(ruleData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(ruleData.getPluginName())).ifPresent(handler -&gt; handler.removeRule(ruleData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 比如divide插件，就只充血了3个方法，其余的都是用接口默认方法。</span><br><span class="line">public class DividePluginDataHandler implements PluginDataHandler &#123;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public void handlerSelector(final SelectorData selectorData) &#123;</span><br><span class="line">        UpstreamCacheManager.getInstance().submit(selectorData);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public void removeSelector(final SelectorData selectorData) &#123;</span><br><span class="line">        UpstreamCacheManager.getInstance().removeByKey(selectorData.getId());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public String pluginNamed() &#123;</span><br><span class="line">        return PluginEnum.DIVIDE.getName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><ul>
+<li>到这里，websocket的数据同步策略一次具体的同步流程就完成了，soul在进行设计的时候进行了高度抽象，大部分的代码都做到了复用，具体的功能特性只需进行少量定制实现就好。最后理一下websocket数据同步策略的流程：</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/f1e5e13ea4ed8f7232b76e0219965c75-20210127123427679-20210127123435841.svg" alt="img"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析"><a href="#soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析" class="headerlink" title="soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析"></a>soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析</h1><h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><ul>
+<li>在一开始使用spring cloud插件的时候，调用网关没有得到请求，一直返回：Can not find url, please check your configuration!</li>
+<li>先说原因，是因为在bootstrap中，没有打开spring cloud的相关依赖导致的，具体分析如下。</li>
+</ul>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ul>
+<li>首先，我们通过网关访问我们的项目，我们知道soul是集成插件达到各种功能的，那么，我们就不用去找soul的入口，可以先去找插件，</li>
+<li>插件的类依赖关系就像下面这样</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611153559988-4e631302-ebde-423a-a947-fd6118f16eef.png" alt="image.png"></p>
+<ul>
+<li>可以看到，顶层是接口，接口的唯一直接实现，是这个抽象类AbstractSoulPlugin，而SpringCloudPlugin继承抽象类做具体的实现。</li>
+<li>我们可以看下，抽象类里面都是什么东东。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611153889175-59a89b58-8cf4-4a30-91bb-cefa529d7387.png" alt="image.png"></p>
+<ul>
+<li>类里面方法太多了，就贴最核心的2个方法吧，一个protected的抽象方法doExecute，一个public的方法execute，<strong>注意看抽象方法的注释，说明这是模版方法，子类继承的时候在里面实现自己的逻辑，非常标准的模版模式运用（</strong>模版模式：简单来说，就是对外提供一个抽象方法，交给子类实现，这个抽象方法的调用，则在抽象类的骨架方法里面调用，上图的execute方法，就是骨架方法，还不清楚，就去查查资料吧<strong>）</strong>。</li>
+<li>其实还有2个直接实现接口的类WebClientPlugin，GlobalPlugin</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611153724359-cdc744df-be5b-469f-9f17-607d9d62709c.png" alt="image.png"><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611159700407-fa59d390-8368-4d1a-a2a1-a746eb4e6ff7.png" alt="image.png"></p>
+<ul>
+<li>先说WebClientPlugin，为啥不继承抽象类，要单独实现呢，个人分析是因为这其实是soul在进行http调用时的核心插件，所有的http调用，都是由这个插件来完成，是soul的默认插件，也许细心的你会发现，在soul-admin中的web控制台中，这个插件不在插件列表里，你不能操作它，而继承了抽象类的插件们，是对客户端提供的可选插件，虽然所有的插件，都在一个插件链里面，但是他们的价值不同，所以，在具体实现上区别开了。</li>
+<li>而GlobalPlugin插件，见名知意，是整个soul插件的基础，看看GlobalPlugin的关键方法。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">    @Override</span><br><span class="line">// 注意，接收的是一个插件链参数，在全局插件中，调用插件链的执行方法，执行每一个插件</span><br><span class="line">    public Mono&lt;Void&gt; execute(final ServerWebExchange exchange, final SoulPluginChain chain) &#123;</span><br><span class="line">        final ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">        final HttpHeaders headers = request.getHeaders();</span><br><span class="line">        final String upgrade = headers.getFirst(&quot;Upgrade&quot;);</span><br><span class="line">        SoulContext soulContext;</span><br><span class="line">        if (StringUtils.isBlank(upgrade) || !&quot;websocket&quot;.equals(upgrade)) &#123;</span><br><span class="line">            soulContext = builder.build(exchange);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            final MultiValueMap&lt;String, String&gt; queryParams = request.getQueryParams();</span><br><span class="line">            soulContext = transformMap(queryParams);</span><br><span class="line">        &#125;</span><br><span class="line">        exchange.getAttributes().put(Constants.CONTEXT, soulContext);</span><br><span class="line">        return chain.execute(exchange);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public int getOrder() &#123;</span><br><span class="line">        // 后面讲到插件排序就有用了，永远是插件链的第一个插件。</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>来看看execute这个骨架方法具体都干什么</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">// ServerWebExchange是webflux的请求处理器</span><br><span class="line">public Mono&lt;Void&gt; execute(final ServerWebExchange exchange, final SoulPluginChain chain) &#123;</span><br><span class="line">        String pluginName = named();  // 获取插件的名称</span><br><span class="line">        final PluginData pluginData = BaseDataCache.getInstance().obtainPluginData(pluginName); //根据名称从缓存拿插件元数据</span><br><span class="line">        if (pluginData != null &amp;&amp; pluginData.getEnabled()) &#123;</span><br><span class="line">            //拿到插件的选择器配置根据URL进行匹配</span><br><span class="line">            final Collection&lt;SelectorData&gt; selectors = BaseDataCache.getInstance().obtainSelectorData(pluginName);</span><br><span class="line">            if (CollectionUtils.isEmpty(selectors)) &#123;</span><br><span class="line">                return handleSelectorIsNull(pluginName, exchange, chain);</span><br><span class="line">            &#125;</span><br><span class="line">            final SelectorData selectorData = matchSelector(exchange, selectors);</span><br><span class="line">            if (Objects.isNull(selectorData)) &#123;</span><br><span class="line">                return handleSelectorIsNull(pluginName, exchange, chain);</span><br><span class="line">            &#125;</span><br><span class="line">            selectorLog(selectorData, pluginName);</span><br><span class="line">            //拿到插件的规则配置根据URL进行规则匹配</span><br><span class="line">            final List&lt;RuleData&gt; rules = BaseDataCache.getInstance().obtainRuleData(selectorData.getId());</span><br><span class="line">            if (CollectionUtils.isEmpty(rules)) &#123;</span><br><span class="line">                return handleRuleIsNull(pluginName, exchange, chain);</span><br><span class="line">            &#125;</span><br><span class="line">            RuleData rule;</span><br><span class="line">            if (selectorData.getType() == SelectorTypeEnum.FULL_FLOW.getCode()) &#123;</span><br><span class="line">                //get last</span><br><span class="line">                rule = rules.get(rules.size() - 1);</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                rule = matchRule(exchange, rules);</span><br><span class="line">            &#125;</span><br><span class="line">            if (Objects.isNull(rule)) &#123;</span><br><span class="line">                return handleRuleIsNull(pluginName, exchange, chain);</span><br><span class="line">            &#125;</span><br><span class="line">            ruleLog(rule, pluginName);</span><br><span class="line">            return doExecute(exchange, chain, selectorData, rule);</span><br><span class="line">        &#125;</span><br><span class="line">        return chain.execute(exchange)</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>既然说了插件链，那就应该看看，插件链在哪，怎么生成的，链的顺序是怎样的</p>
+</li>
+<li><ul>
+<li>在模版方法处debug，逆向寻找，最终找到了插件链定义的地方：<strong>SoulWebHandler</strong><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611156130907-01526587-ec64-4bf3-ba5d-a0dd7fc37461.png" alt="image.png"></li>
+<li>查看构造方法的调用，找到了插件链生成的地方：SoulConfiguration<strong>
+</strong></li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611156311825-1c6ece72-7f0b-4f4f-bd4e-2592a40ddd46.png" alt="image.png"></p>
+<ul>
+<li><ul>
+<li>通过Spring的bean属性注入，来构造的插件链，Spring在执行该方法的时候，会根据方法参数，将所有实现了SoulPlugin接口并且委托给Spring管理的bean都封装后传入。</li>
+<li><strong>注意看，插件链在构造的时候，是排了序的</strong>，为什么要排序，要归根于插件具体的作用不同，有的插件是初始化的，有的是参数处理的，有的是实际执行的，举个例子，刚刚说了，soul中进行http调用实际上用的是wenClientPlugin插件来执行的，那么，那些要使用http调用的插件，比如divide插件，不是重复了么，那我们来看看divide插件里面，干了什么。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">protected Mono&lt;Void&gt; doExecute(final ServerWebExchange exchange, final SoulPluginChain chain, final SelectorData selector, final RuleData rule) &#123;</span><br><span class="line">        // 获取soul上下文，拿到插件的规则处理器    </span><br><span class="line">        final SoulContext soulContext = exchange.getAttribute(Constants.CONTEXT);</span><br><span class="line">        assert soulContext != null;</span><br><span class="line">        final DivideRuleHandle ruleHandle = GsonUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle.class);</span><br><span class="line">        final List&lt;DivideUpstream&gt; upstreamList = UpstreamCacheManager.getInstance().findUpstreamListBySelectorId(selector.getId());</span><br><span class="line">        if (CollectionUtils.isEmpty(upstreamList)) &#123;</span><br><span class="line">            log.error(&quot;divide upstream configuration error： &#123;&#125;&quot;, rule.toString());</span><br><span class="line">            Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), null);</span><br><span class="line">            return WebFluxResultUtils.result(exchange, error);</span><br><span class="line">        &#125;</span><br><span class="line">        final String ip = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();</span><br><span class="line">        DivideUpstream divideUpstream = LoadBalanceUtils.selector(upstreamList, ruleHandle.getLoadBalance(), ip);</span><br><span class="line">        if (Objects.isNull(divideUpstream)) &#123;</span><br><span class="line">            log.error(&quot;divide has no upstream&quot;);</span><br><span class="line">            Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), null);</span><br><span class="line">            return WebFluxResultUtils.result(exchange, error);</span><br><span class="line">        &#125;</span><br><span class="line">        // set the http url 注释也写了，设置http的url和超时配置。</span><br><span class="line">        String domain = buildDomain(divideUpstream);</span><br><span class="line">        String realURL = buildRealURL(domain, soulContext, exchange);</span><br><span class="line">        exchange.getAttributes().put(Constants.HTTP_URL, realURL);</span><br><span class="line">        // set the http timeout</span><br><span class="line">        exchange.getAttributes().put(Constants.HTTP_TIME_OUT, ruleHandle.getTimeout());</span><br><span class="line">        exchange.getAttributes().put(Constants.HTTP_RETRY, ruleHandle.getRetry());</span><br><span class="line">        return chain.execute(exchange);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ul>
+<li>可以看到，就是设置了下http的url跟一些相关参数，前面我们说了，soul插件链的处理，使用了模版模式做了一层抽象设计，http的调用，用的是souWebClient插件，这就要看看souWebClient的模版方法写的啥了。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">    public Mono&lt;Void&gt; execute(final ServerWebExchange exchange, final SoulPluginChain chain) &#123;</span><br><span class="line">        final SoulContext soulContext = exchange.getAttribute(Constants.CONTEXT);</span><br><span class="line">        assert soulContext != null;</span><br><span class="line">        // 拿到url和相关参数</span><br><span class="line">        String urlPath = exchange.getAttribute(Constants.HTTP_URL);</span><br><span class="line">        if (StringUtils.isEmpty(urlPath)) &#123;</span><br><span class="line">            Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), null);</span><br><span class="line">            return WebFluxResultUtils.result(exchange, error);</span><br><span class="line">        &#125;</span><br><span class="line">        long timeout = (long) Optional.ofNullable(exchange.getAttribute(Constants.HTTP_TIME_OUT)).orElse(3000L);</span><br><span class="line">        int retryTimes = (int) Optional.ofNullable(exchange.getAttribute(Constants.HTTP_RETRY)).orElse(0);</span><br><span class="line">        log.info(&quot;The request urlPath is &#123;&#125;, retryTimes is &#123;&#125;&quot;, urlPath, retryTimes);</span><br><span class="line">        //封装成http请求发起调用</span><br><span class="line">        HttpMethod method = HttpMethod.valueOf(exchange.getRequest().getMethodValue());</span><br><span class="line">        WebClient.RequestBodySpec requestBodySpec = webClient.method(method).uri(urlPath);</span><br><span class="line">        return handleRequestBody(requestBodySpec, exchange, timeout, retryTimes, chain);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ul>
+<li>所以，已经可以肯定soul中需要使用http进行调用的可选插件，都只是进行了http参数的设置，通过soulContext进行传递，交给webClient插件进行调用。也就能说通，为什么插件链生成的时候要排序了，如果不进行排序，webClient插件链在其他插件之前被执行了，那就GG了，类似的，基于dubbo， sofa协议的rpc调用，也会在实际执行之前，先进行请求的构建，只是具体实现稍有不同。具体插件们的顺序，<strong>在**</strong>PluginEnum中定义了。**</li>
+<li><strong>还有一个插件与WebClientPlugin一样比较特殊，GlobalPlugin，它是初始化插件</strong></li>
+<li>前面说了插件链的定义、生成，插件链的顺序，也说了具体的插件是通过Spring注入的，那么这些具体的插件bean在哪里交给Spring托管的呢</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611156560520-fe191cdf-7777-4aaa-8e36-9cd445cf43bc.png" alt="image.png"><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611156612395-bc26793d-1d09-4308-b6d8-0625c634446c.png" alt="image.png"></p>
+<p><strong>每一个插件，都提供了对应的starter来进行插件的实例化，从而可以在构造soulWebHandler时拿到插件。</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>至此，http插件的一个调用过程就说完了，原因就如一开始所说，spring cloud也是通过http来进行调用，pom没有加入Spring cloud相关的依赖，导致soul在创建webHandler的时候，没有加载到spring cloud插件，也就没有spring cloud相关的配置，自然也就调用不到实际的url了。</li>
+<li>最后是插件调用链的图。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/jpeg/2938489/1611161979343-279f3241-95c3-4f8d-bda8-1f99e073b8ba.jpeg" alt="img"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-zookeeper数据同步策略流程详解"><a href="#soul源码阅读-zookeeper数据同步策略流程详解" class="headerlink" title="soul源码阅读-zookeeper数据同步策略流程详解"></a>soul源码阅读-zookeeper数据同步策略流程详解</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。</p>
+</li>
+<li><blockquote>
+<p>依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存</p>
+</blockquote>
+</li>
+<li><p>我们画一下这个流程图：</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">a[soul-admin发起一个修改] --&gt; b[zookeeper]</span><br><span class="line">b[zookeeper watch, 修改数据发送到web] --&gt; c[soul-web接收进行处理]</span><br></pre></td></tr></table></figure>
+<h2 id="admin像zk发送数据"><a href="#admin像zk发送数据" class="headerlink" title="admin像zk发送数据"></a>admin像zk发送数据</h2></li>
+<li><p>依旧是类似的实现，使用zk当然就使用对应的ZookeeperDataChangedListener来作为zk的客户端发送最新数据了，挑2个方法来简单介绍就好：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMetaDataChanged</span><span class="params">(<span class="keyword">final</span> List&lt;MetaData&gt; changed, <span class="keyword">final</span> DataEventTypeEnum eventType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (MetaData data : changed) &#123;</span><br><span class="line">            String metaDataPath = ZkPathConstants.buildMetaDataPath(URLEncoder.encode(data.getPath(), <span class="string">"UTF-8"</span>));</span><br><span class="line">            <span class="comment">// delete</span></span><br><span class="line">            <span class="keyword">if</span> (eventType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                deleteZkPath(metaDataPath);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// create or update</span></span><br><span class="line">            insertZkNode(metaDataPath, data);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPluginChanged</span><span class="params">(<span class="keyword">final</span> List&lt;PluginData&gt; changed, <span class="keyword">final</span> DataEventTypeEnum eventType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (PluginData data : changed) &#123;</span><br><span class="line">            String pluginPath = ZkPathConstants.buildPluginPath(data.getName());</span><br><span class="line">            <span class="comment">// delete</span></span><br><span class="line">            <span class="keyword">if</span> (eventType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                deleteZkPathRecursive(pluginPath);</span><br><span class="line">                String selectorParentPath = ZkPathConstants.buildSelectorParentPath(data.getName());</span><br><span class="line">                deleteZkPathRecursive(selectorParentPath);</span><br><span class="line">                String ruleParentPath = ZkPathConstants.buildRuleParentPath(data.getName());</span><br><span class="line">                deleteZkPathRecursive(ruleParentPath);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//create or update</span></span><br><span class="line">            insertZkNode(pluginPath, data);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>也很明显，对于多级节点的情况，递归删除树下的子节点然后将新数据添加就好，单节点就直接删除，<strong>其实zk的的数据同步相比nacos，http长轮询的方式确实要简单的多，可能也是因为zk本身的强一致性简化了这里的实现</strong>。</li>
+</ul>
+<h2 id="web更新缓存"><a href="#web更新缓存" class="headerlink" title="web更新缓存"></a>web更新缓存</h2><ul>
+<li><p>那么，在zk接收了数据之后，zk就会往soul发送数据了，之前也说了，soul中的这几种数据同步方式结构上很相似，所以我们可以直接看收到zk数据之后具体的处理操作就好，实际处理是在<code>ZookeeperSyncDataService</code>    类中，soul中代码，做了高度封装，这里以几个数据类型的处理方法作为示例，其他数据类型处理方式基本相同</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化时先从zk获取元数据进行更新，更新完毕在创建监听器监听后续修改</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">watchMetaData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> String metaDataPath = ZkPathConstants.META_DATA;</span><br><span class="line">  <span class="comment">// 先获取子节点</span></span><br><span class="line">        List&lt;String&gt; childrenList = zkClientGetChildren(metaDataPath);</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isNotEmpty(childrenList)) &#123;</span><br><span class="line">            childrenList.forEach(children -&gt; &#123;</span><br><span class="line">              <span class="comment">// 缓存对应的数据</span></span><br><span class="line">                String realPath = buildRealPath(metaDataPath, children);</span><br><span class="line">                cacheMetaData(zkClient.readData(realPath));</span><br><span class="line">                subscribeMetaDataChanges(realPath);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        subscribeChildChanges(ConfigGroupEnum.META_DATA, metaDataPath, childrenList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取zk中对应数据的子节点</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> List&lt;String&gt; <span class="title">zkClientGetChildren</span><span class="params">(<span class="keyword">final</span> String parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!zkClient.exists(parent)) &#123;</span><br><span class="line">            zkClient.createPersistent(parent, <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> zkClient.getChildren(parent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构建缓存的路径</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">buildRealPath</span><span class="params">(<span class="keyword">final</span> String parent, <span class="keyword">final</span> String children)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> parent + <span class="string">"/"</span> + children;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存元数据</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cacheMetaData</span><span class="params">(<span class="keyword">final</span> MetaData metaData)</span> </span>&#123;</span><br><span class="line">        Optional.ofNullable(metaData).ifPresent(data -&gt; metaDataSubscribers.forEach(e -&gt; e.onSubscribe(metaData)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订阅元数据修改的监听器</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">subscribeMetaDataChanges</span><span class="params">(<span class="keyword">final</span> String realPath)</span> </span>&#123;</span><br><span class="line">        zkClient.subscribeDataChanges(realPath, <span class="keyword">new</span> IZkDataListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataChange</span><span class="params">(<span class="keyword">final</span> String dataPath, <span class="keyword">final</span> Object data)</span> </span>&#123;</span><br><span class="line">                cacheMetaData((MetaData) data);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@SneakyThrows</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataDeleted</span><span class="params">(<span class="keyword">final</span> String dataPath)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">final</span> String realPath = dataPath.substring(ZkPathConstants.META_DATA.length() + <span class="number">1</span>);</span><br><span class="line">                MetaData metaData = <span class="keyword">new</span> MetaData();</span><br><span class="line">                metaData.setPath(URLDecoder.decode(realPath, StandardCharsets.UTF_8.name()));</span><br><span class="line">                unCacheMetaData(metaData);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 相关数据类型下的子节点监听器，如果任意数据下的子节点发生变动就会收到数据同步缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">subscribeChildChanges</span><span class="params">(<span class="keyword">final</span> ConfigGroupEnum groupKey, <span class="keyword">final</span> String groupParentPath, <span class="keyword">final</span> List&lt;String&gt; childrenList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (groupKey) &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">case</span> META_DATA:</span><br><span class="line">                zkClient.subscribeChildChanges(groupParentPath, (parentPath, currentChildren) -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(currentChildren)) &#123;</span><br><span class="line">                        <span class="keyword">final</span> List&lt;String&gt; addSubscribePath = addSubscribePath(childrenList, currentChildren);</span><br><span class="line">                        addSubscribePath.stream().map(children -&gt; &#123;</span><br><span class="line">                            <span class="keyword">final</span> String realPath = buildRealPath(parentPath, children);</span><br><span class="line">                            cacheMetaData(zkClient.readData(realPath));</span><br><span class="line">                            <span class="keyword">return</span> realPath;</span><br><span class="line">                        &#125;).forEach(<span class="keyword">this</span>::subscribeMetaDataChanges);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Unexpected groupKey: "</span> + groupKey);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>整个zk同步策略的流程就结束了，到此soul中所有的数据同步方式的流程就都介绍了，整体来说，数据同步部分的设计确实很好，实现上做了高度统一，在数据同步的时候使用发布订阅模式，不同类型处理方式都基本相同，无论是代码阅读还是使用都很方便，而且内部的实现细节上面做了高度封装，基本没有什么冗余代码，只能说两个字，优雅。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-sofa插件使用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/27/soul源码阅读-sofa插件使用/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="soul源码阅读-sofa插件使用"><a href="#soul源码阅读-sofa插件使用" class="headerlink" title="soul源码阅读-sofa插件使用"></a>soul源码阅读-sofa插件使用</h1><h2 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h2><ul>
+<li><h2 id="启动-1"><a href="#启动-1" class="headerlink" title="启动"></a>启动</h2><ul>
+<li>参考官网介绍，在soul-bootstarp中，打开sofa相关依赖，启动soul-admin和soul-bootstrap，在启动example下soul-examples-sofa</li>
+<li>在启动过程中遇到sofa注解的接口失败的问题，debug源码的时候发现，接口在注册的时候，整体流程如下</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993185983-0f4bcb04-0e41-4567-8be8-1ef198711f82.png?x-oss-process=image%2Fresize%2Cw_1500" alt="image.png"></p>
+<ul>
+<li>SofaServiceBeanPostProcessor.handler</li>
+<li>RegisterUtils.doRegister</li>
+<li>OkHttpTools.getInstance.post–http#post方法调用soul-admin进行注册</li>
+<li>SoulClientController.registerSofaRpc</li>
+<li>SoulClientRegisterService.registerSofa</li>
+<li>在启动的时候，sofa插件利用Spring的bean后置处理器机制，在创建一个bean的时候，通过http调用soul-admin将插件注册到网关中，然而后面报错的具体点却是，在对插件元数据进行入库持久化的时候，报错了，具体报错的点在这</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993098310-28185fc1-df7c-4624-bba9-4c9b3b95d8c9.png" alt="image.png"></p>
+<ul>
+<li>这个方法使用serviceName和method进行查询，在sofa的例子中，使用的是dubboTest类型，而如果你之前用了dubbo例子，会先将dubbo例子的接口注册的时候持久化其元数据，sofa例子的参数与dubbo的参数是一样的，而这里进行注册的时候，上述红框代码使用serviceName和method查询的时候返回2条数据，导致最终注册失败。这里查出来2条数据，具体操作是在dubbo例子中先启动一次，然后修改配置文件的appName属性在启动一次，就能注册2份appName不一样其他都一样的数据。</li>
+<li>解决了问题之后，我们再进行调用测试<br><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1610993139171-1621e479-aeb8-4d7d-9a03-0c380e784c38.png" alt="image.png"></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/15/soul架构概述与http服务使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -600,643 +1883,13 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/07/19/记一次JPA不同查询得到同一对象修改发生异常的问题/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Zhoutzzz">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Z">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/19/记一次JPA不同查询得到同一对象修改发生异常的问题/" itemprop="url">记一次JPA不同查询得到同一对象修改发生异常的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-19T22:34:45+08:00">
-                2019-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>在公司做项目的时候，根据数据库一个排序字段进行排序，在对该字段进行修改的时候，需要保证修改后顺序依然是连续正确的，做的时候我查询了两次，通过ID查询得到要修改的数据修改之前的值，然后再通过序号查询到修改后哪些值的序号需要调整。<br></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/19/记一次JPA不同查询得到同一对象修改发生异常的问题/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/03/29/webmagic初体验/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Zhoutzzz">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Z">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/29/webmagic初体验/" itemprop="url">webmagic初体验</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-29T23:52:22+08:00">
-                2019-03-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/webmagic/" itemprop="url" rel="index">
-                    <span itemprop="name">webmagic</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/webmagic/爬虫/" itemprop="url" rel="index">
-                    <span itemprop="name">爬虫</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>用Java写爬虫我选了webmagic，原因没别的，比起其他爬虫框架这个知道的早一些。看着文档跟百度鼓捣一天，基本功能是搞定了，写一篇文章记录下使用webmagic的过程和对其的理解，方便日后查阅。<br></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/29/webmagic初体验/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/03/24/算法-插入排序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Zhoutzzz">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Z">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/24/算法-插入排序/" itemprop="url">算法-插入排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-24T14:36:13+08:00">
-                2019-03-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法-排序/" itemprop="url" rel="index">
-                    <span itemprop="name">算法, 排序</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>之前写了第一篇之后，就打算写一个排序算法系列的文章，这个是第二篇，这个系列的文章会不定期更新。<br></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/24/算法-插入排序/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2019/03/17/算法入门-快速排序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Zhoutzzz">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Z">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/03/17/算法入门-快速排序/" itemprop="url">算法入门-快速排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-17T16:23:13+08:00">
-                2019-03-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法-排序/" itemprop="url" rel="index">
-                    <span itemprop="name">算法, 排序</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>之前一直在弄自己的github博客，弄好后因为想用sublime写博客，无奈sublime不能联网了，导致装个MarkdownEditing费了好大劲才勉强弄好，今天写下自己的第一篇博客，以作纪念（哈哈哈）。<br>因为之前在学习算法，第一篇博客就拿算法来开头了，也是对之前学习的一个复习。<br></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/03/17/算法入门-快速排序/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1282,7 +1935,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1304,7 +1957,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

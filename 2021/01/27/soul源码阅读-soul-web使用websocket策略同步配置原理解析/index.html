@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="soul源码阅读-soul-web使用websocket策略同步配置原理解析前言 在之前的文章中说到了soul的http长轮询数据同步策略，这次说一下另一个跟http有点关系的同步策略websocket，websocket策略与长轮询相反，它是admin主动向网关push数据，在官网的文章中，也介绍了websocket的同步原理，结合官网的文章看一下websocket的整体同步流程。  连接建立在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Z">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="soul源码阅读-soul-web使用websocket策略同步配置原理解析前言 在之前的文章中说到了soul的http长轮询数据同步策略，这次说一下另一个跟http有点关系的同步策略websocket，websocket策略与长轮询相反，它是admin主动向网关push数据，在官网的文章中，也介绍了websocket的同步原理，结合官网的文章看一下websocket的整体同步流程。  连接建立在">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/f1e5e13ea4ed8f7232b76e0219965c75-20210127123427679-20210127123435841.svg">
+<meta property="og:updated_time" content="2021-01-27T04:49:46.518Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Z">
+<meta name="twitter:description" content="soul源码阅读-soul-web使用websocket策略同步配置原理解析前言 在之前的文章中说到了soul的http长轮询数据同步策略，这次说一下另一个跟http有点关系的同步策略websocket，websocket策略与长轮询相反，它是admin主动向网关push数据，在官网的文章中，也介绍了websocket的同步原理，结合官网的文章看一下websocket的整体同步流程。  连接建立在">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/f1e5e13ea4ed8f7232b76e0219965c75-20210127123427679-20210127123435841.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/">
+
+
+
+
+
+  <title> | Z</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Z</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="soul源码阅读-soul-web使用websocket策略同步配置原理解析"><a href="#soul源码阅读-soul-web使用websocket策略同步配置原理解析" class="headerlink" title="soul源码阅读-soul-web使用websocket策略同步配置原理解析"></a>soul源码阅读-soul-web使用websocket策略同步配置原理解析</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li>在之前的文章中说到了soul的http长轮询数据同步策略，这次说一下另一个跟http有点关系的同步策略websocket，websocket策略与长轮询相反，<strong>它是admin主动向网关push数据</strong>，在官网的文章中，也介绍了websocket的同步原理，结合官网的文章看一下websocket的整体同步流程。</li>
+</ul>
+<h2 id="连接建立"><a href="#连接建立" class="headerlink" title="连接建立"></a>连接建立</h2><p>在我们将网关同步策略配置为websocket后，启动项目，加载我们在网关配置的同步策略</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">soul :</span><br><span class="line">    sync:</span><br><span class="line">    websocket :</span><br><span class="line">        urls: ws://localhost:9095/websocket # 如果是网关集群，这里可以配置多个，用&apos;,&apos;分割，比如ws://localhost:9095/websocket，ws://localhost:9096/websocket</span><br></pre></td></tr></table></figure>
+<p>之后会向目标地址建立websocket连接，在建立websocket连接的时候，会对每个连接设置30s间隔的断线重连，具体代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">public WebsocketSyncDataService(final WebsocketConfig websocketConfig,</span><br><span class="line">                                    final PluginDataSubscriber pluginDataSubscriber,</span><br><span class="line">                                    final List&lt;MetaDataSubscriber&gt; metaDataSubscribers,</span><br><span class="line">                                    final List&lt;AuthDataSubscriber&gt; authDataSubscribers) &#123;</span><br><span class="line">            // 解析url，根据url的数量，创建对应的守护调度线程</span><br><span class="line">        String[] urls = StringUtils.split(websocketConfig.getUrls(), &quot;,&quot;);</span><br><span class="line">        executor = new ScheduledThreadPoolExecutor(urls.length, SoulThreadFactory.create(&quot;websocket-connect&quot;, true));</span><br><span class="line">        for (String url : urls) &#123;</span><br><span class="line">            try &#123;</span><br><span class="line">                clients.add(new SoulWebsocketClient(new URI(url), Objects.requireNonNull(pluginDataSubscriber), metaDataSubscribers, authDataSubscribers));</span><br><span class="line">            &#125; catch (URISyntaxException e) &#123;</span><br><span class="line">                log.error(&quot;websocket url(&#123;&#125;) is error&quot;, url, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        try &#123;</span><br><span class="line">          // 对每个连接都设置同步阻塞方式，30s超时时间</span><br><span class="line">            for (WebSocketClient client : clients) &#123;</span><br><span class="line">                boolean success = client.connectBlocking(3000, TimeUnit.MILLISECONDS);</span><br><span class="line">                if (success) &#123;</span><br><span class="line">                    log.info(&quot;websocket connection is successful.....&quot;);</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    log.error(&quot;websocket connection is error.....&quot;);</span><br><span class="line">                &#125;</span><br><span class="line">              // 连接成功后，每30s检查一下心跳</span><br><span class="line">                executor.scheduleAtFixedRate(() -&gt; &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                        if (client.isClosed()) &#123;</span><br><span class="line">                            boolean reconnectSuccess = client.reconnectBlocking();</span><br><span class="line">                            if (reconnectSuccess) &#123;</span><br><span class="line">                                log.info(&quot;websocket reconnect is successful.....&quot;);</span><br><span class="line">                            &#125; else &#123;</span><br><span class="line">                                log.error(&quot;websocket reconnection is error.....&quot;);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">                        log.error(&quot;websocket connect is error :&#123;&#125;&quot;, e.getMessage());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, 10, 30, TimeUnit.SECONDS);</span><br><span class="line">            &#125;</span><br><span class="line">            /* client.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(&quot;proxyaddress&quot;, 80)));*/</span><br><span class="line">        &#125; catch (InterruptedException e) &#123;</span><br><span class="line">            log.info(&quot;websocket connection...exception....&quot;, e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="主动Push"><a href="#主动Push" class="headerlink" title="主动Push"></a>主动Push</h2><ul>
+<li>此时web与admin的连接就建立完成了，只需要等待admin发生修改操作，将数据push到web更新本地缓存就好，我们来看看admin的push过程，以及web收到通知后的操作，在admin修改一个配置提交,定位到PluginServiceImpl#createOrUpdate方法。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public String createOrUpdate(final PluginDTO pluginDTO) &#123;</span><br><span class="line">        final String msg = checkData(pluginDTO);</span><br><span class="line">        if (StringUtils.isNoneBlank(msg)) &#123;</span><br><span class="line">            return msg;</span><br><span class="line">        &#125;</span><br><span class="line">        PluginDO pluginDO = PluginDO.buildPluginDO(pluginDTO);</span><br><span class="line">        DataEventTypeEnum eventType = DataEventTypeEnum.CREATE;</span><br><span class="line">        if (StringUtils.isBlank(pluginDTO.getId())) &#123;</span><br><span class="line">            pluginMapper.insertSelective(pluginDO);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            eventType = DataEventTypeEnum.UPDATE;</span><br><span class="line">            pluginMapper.updateSelective(pluginDO);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // publish change event.</span><br><span class="line">        eventPublisher.publishEvent(new DataChangedEvent(ConfigGroupEnum.PLUGIN, eventType,</span><br><span class="line">                Collections.singletonList(PluginTransfer.INSTANCE.mapToData(pluginDO))));</span><br><span class="line">        return StringUtils.EMPTY;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在admin中，与其他的数据同步策略处理一样，都是通过Spring事件发布机制处理，看下最终通过DataChangedEventDispatcher定位到的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void onPluginChanged(final List&lt;PluginData&gt; pluginDataList, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">        WebsocketData&lt;PluginData&gt; websocketData =</span><br><span class="line">                new WebsocketData&lt;&gt;(ConfigGroupEnum.PLUGIN.name(), eventType.name(), pluginDataList);</span><br><span class="line">        WebsocketCollector.send(GsonUtils.getInstance().toJson(websocketData), eventType);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通过listener定位到了websocketDataChangedListener中，之后通过WebsocketCollector#send方法发送数据，看看WebsocketCollector#send方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public static void send(final String message, final DataEventTypeEnum type) &#123;</span><br><span class="line">        if (StringUtils.isNotBlank(message)) &#123;</span><br><span class="line">            if (DataEventTypeEnum.MYSELF == type) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    Session session = (Session) ThreadLocalUtil.get(SESSION_KEY);</span><br><span class="line">                    if (session != null) &#123;</span><br><span class="line">                        session.getBasicRemote().sendText(message);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    log.error(&quot;websocket send result is exception: &quot;, e);</span><br><span class="line">                &#125;</span><br><span class="line">                return;</span><br><span class="line">            &#125;</span><br><span class="line">            for (Session session : SESSION_SET) &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    session.getBasicRemote().sendText(message);</span><br><span class="line">                &#125; catch (IOException e) &#123;</span><br><span class="line">                    log.error(&quot;websocket send result is exception: &quot;, e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在admin通过websocket发送之后，SoulWebsocketClient#onMessage接收数据最终在handleResult方法进行处理</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">private void handleResult(final String result) &#123;</span><br><span class="line">  // json反序列化之后，获取到configGroup和eventType事件类型最终进行处理</span><br><span class="line">        WebsocketData websocketData = GsonUtils.getInstance().fromJson(result, WebsocketData.class);</span><br><span class="line">        ConfigGroupEnum groupEnum = ConfigGroupEnum.acquireByName(websocketData.getGroupType());</span><br><span class="line">        String eventType = websocketData.getEventType();</span><br><span class="line">        String json = GsonUtils.getInstance().toJson(websocketData.getData());</span><br><span class="line">        websocketDataHandler.executor(groupEnum, json, eventType);</span><br><span class="line">    &#125;</span><br><span class="line">// WebsocketDataHandler#executor</span><br><span class="line">public void executor(final ConfigGroupEnum type, final String json, final String eventType) &#123;</span><br><span class="line">        ENUM_MAP.get(type).handle(json, eventType);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后定位到了AbstractDataHandler中的handle方法（又是一个运用了模版模式的地方）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public void handle(final String json, final String eventType) &#123;</span><br><span class="line">  // 解析json后根据不同的具体实现类和eventType，定位到具体的实现类中进行执行</span><br><span class="line">        List&lt;T&gt; dataList = convert(json);</span><br><span class="line">        if (CollectionUtils.isNotEmpty(dataList)) &#123;</span><br><span class="line">            DataEventTypeEnum eventTypeEnum = DataEventTypeEnum.acquireByName(eventType);</span><br><span class="line">            switch (eventTypeEnum) &#123;</span><br><span class="line">                case REFRESH:</span><br><span class="line">                case MYSELF:</span><br><span class="line">                    doRefresh(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                case UPDATE:</span><br><span class="line">                case CREATE:</span><br><span class="line">                    doUpdate(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                case DELETE:</span><br><span class="line">                    doDelete(dataList);</span><br><span class="line">                    break;</span><br><span class="line">                default:</span><br><span class="line">                    break;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们修改插件，因此是Plugin类型，最终定位到了PluginDataHandler#doUpdate方法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">protected void doUpdate(final List&lt;PluginData&gt; dataList) &#123;</span><br><span class="line">  // 就一行代码，依次订阅，而具体查看这个onSubscribe方法时，PluginDataSubscriber就只有一个具体实现CommonPluginDataSubscriber，最终会定位到CommonPluginDataSubscriber的具体实现中</span><br><span class="line">        dataList.forEach(pluginDataSubscriber::onSubscribe);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">//CommonPluginDataSubscriber</span><br><span class="line">//逻辑上处理也相对简单，判断事件类型，更新对应类型的缓存</span><br><span class="line">//每个分支下面都用到了BaseDataCache，见名知意，网关里面各种插件数据类型的数据都缓存在这里了。</span><br><span class="line">//之后的handler.xxx方法，其实就是对应的数据类型的处理器了，接口里面大多使用了默认实现，具体处理器实现接口根据需要进行重写</span><br><span class="line">private &lt;T&gt; void subscribeDataHandler(final T classData, final DataEventTypeEnum dataType) &#123;</span><br><span class="line">        Optional.ofNullable(classData).ifPresent(data -&gt; &#123;</span><br><span class="line">            if (data instanceof PluginData) &#123;</span><br><span class="line">                PluginData pluginData = (PluginData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cachePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.handlerPlugin(pluginData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.removePlugin(pluginData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else if (data instanceof SelectorData) &#123;</span><br><span class="line">                SelectorData selectorData = (SelectorData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cacheSelectData(selectorData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(selectorData.getPluginName())).ifPresent(handler -&gt; handler.handlerSelector(selectorData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removeSelectData(selectorData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(selectorData.getPluginName())).ifPresent(handler -&gt; handler.removeSelector(selectorData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; else if (data instanceof RuleData) &#123;</span><br><span class="line">                RuleData ruleData = (RuleData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().cacheRuleData(ruleData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(ruleData.getPluginName())).ifPresent(handler -&gt; handler.handlerRule(ruleData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removeRuleData(ruleData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(ruleData.getPluginName())).ifPresent(handler -&gt; handler.removeRule(ruleData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// 比如divide插件，就只充血了3个方法，其余的都是用接口默认方法。</span><br><span class="line">public class DividePluginDataHandler implements PluginDataHandler &#123;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public void handlerSelector(final SelectorData selectorData) &#123;</span><br><span class="line">        UpstreamCacheManager.getInstance().submit(selectorData);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public void removeSelector(final SelectorData selectorData) &#123;</span><br><span class="line">        UpstreamCacheManager.getInstance().removeByKey(selectorData.getId());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    @Override</span><br><span class="line">    public String pluginNamed() &#123;</span><br><span class="line">        return PluginEnum.DIVIDE.getName();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><ul>
+<li>到这里，websocket的数据同步策略一次具体的同步流程就完成了，soul在进行设计的时候进行了高度抽象，大部分的代码都做到了复用，具体的功能特性只需进行少量定制实现就好。最后理一下websocket数据同步策略的流程：</li>
+</ul>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/f1e5e13ea4ed8f7232b76e0219965c75-20210127123427679-20210127123435841.svg" alt="img"></p>
+
+      
+    </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/" rel="prev" title>
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MzM2Ny8xOTkwOA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Zhoutzzz">
+            
+              <p class="site-author-name" itemprop="name">Zhoutzzz</p>
+              <p class="site-description motion-element" itemprop="description">一枚Java Coder的个人学习基地</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Zhoutzzz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="925920668@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读-soul-web使用websocket策略同步配置原理解析"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读-soul-web使用websocket策略同步配置原理解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连接建立"><span class="nav-number">1.2.</span> <span class="nav-text">连接建立</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主动Push"><span class="nav-number">1.3.</span> <span class="nav-text">主动Push</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">1.4.</span> <span class="nav-text">结尾</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhoutzzz</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+
+</div>
+<!-- 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+ -->
+
+
+  <span class="post-meta-divider">|</span>
+
+<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+
+<!-- 
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+ -->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

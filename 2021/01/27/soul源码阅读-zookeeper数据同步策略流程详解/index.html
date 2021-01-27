@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Z">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-01-27T04:49:46.469Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Z">
+<meta name="twitter:description" content="soul源码阅读-zookeeper数据同步策略流程详解前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/">
+
+
+
+
+
+  <title> | Z</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Z</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-zookeeper数据同步策略流程详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="soul源码阅读-zookeeper数据同步策略流程详解"><a href="#soul源码阅读-zookeeper数据同步策略流程详解" class="headerlink" title="soul源码阅读-zookeeper数据同步策略流程详解"></a>soul源码阅读-zookeeper数据同步策略流程详解</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。</p>
+</li>
+<li><blockquote>
+<p>依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存</p>
+</blockquote>
+</li>
+<li><p>我们画一下这个流程图：</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">a[soul-admin发起一个修改] --&gt; b[zookeeper]</span><br><span class="line">b[zookeeper watch, 修改数据发送到web] --&gt; c[soul-web接收进行处理]</span><br></pre></td></tr></table></figure>
+<h2 id="admin像zk发送数据"><a href="#admin像zk发送数据" class="headerlink" title="admin像zk发送数据"></a>admin像zk发送数据</h2></li>
+<li><p>依旧是类似的实现，使用zk当然就使用对应的ZookeeperDataChangedListener来作为zk的客户端发送最新数据了，挑2个方法来简单介绍就好：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onMetaDataChanged</span><span class="params">(<span class="keyword">final</span> List&lt;MetaData&gt; changed, <span class="keyword">final</span> DataEventTypeEnum eventType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (MetaData data : changed) &#123;</span><br><span class="line">            String metaDataPath = ZkPathConstants.buildMetaDataPath(URLEncoder.encode(data.getPath(), <span class="string">"UTF-8"</span>));</span><br><span class="line">            <span class="comment">// delete</span></span><br><span class="line">            <span class="keyword">if</span> (eventType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                deleteZkPath(metaDataPath);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// create or update</span></span><br><span class="line">            insertZkNode(metaDataPath, data);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onPluginChanged</span><span class="params">(<span class="keyword">final</span> List&lt;PluginData&gt; changed, <span class="keyword">final</span> DataEventTypeEnum eventType)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (PluginData data : changed) &#123;</span><br><span class="line">            String pluginPath = ZkPathConstants.buildPluginPath(data.getName());</span><br><span class="line">            <span class="comment">// delete</span></span><br><span class="line">            <span class="keyword">if</span> (eventType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                deleteZkPathRecursive(pluginPath);</span><br><span class="line">                String selectorParentPath = ZkPathConstants.buildSelectorParentPath(data.getName());</span><br><span class="line">                deleteZkPathRecursive(selectorParentPath);</span><br><span class="line">                String ruleParentPath = ZkPathConstants.buildRuleParentPath(data.getName());</span><br><span class="line">                deleteZkPathRecursive(ruleParentPath);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//create or update</span></span><br><span class="line">            insertZkNode(pluginPath, data);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>也很明显，对于多级节点的情况，递归删除树下的子节点然后将新数据添加就好，单节点就直接删除，<strong>其实zk的的数据同步相比nacos，http长轮询的方式确实要简单的多，可能也是因为zk本身的强一致性简化了这里的实现</strong>。</li>
+</ul>
+<h2 id="web更新缓存"><a href="#web更新缓存" class="headerlink" title="web更新缓存"></a>web更新缓存</h2><ul>
+<li><p>那么，在zk接收了数据之后，zk就会往soul发送数据了，之前也说了，soul中的这几种数据同步方式结构上很相似，所以我们可以直接看收到zk数据之后具体的处理操作就好，实际处理是在<code>ZookeeperSyncDataService</code>    类中，soul中代码，做了高度封装，这里以几个数据类型的处理方法作为示例，其他数据类型处理方式基本相同</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化时先从zk获取元数据进行更新，更新完毕在创建监听器监听后续修改</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">watchMetaData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> String metaDataPath = ZkPathConstants.META_DATA;</span><br><span class="line">  <span class="comment">// 先获取子节点</span></span><br><span class="line">        List&lt;String&gt; childrenList = zkClientGetChildren(metaDataPath);</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isNotEmpty(childrenList)) &#123;</span><br><span class="line">            childrenList.forEach(children -&gt; &#123;</span><br><span class="line">              <span class="comment">// 缓存对应的数据</span></span><br><span class="line">                String realPath = buildRealPath(metaDataPath, children);</span><br><span class="line">                cacheMetaData(zkClient.readData(realPath));</span><br><span class="line">                subscribeMetaDataChanges(realPath);</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        subscribeChildChanges(ConfigGroupEnum.META_DATA, metaDataPath, childrenList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取zk中对应数据的子节点</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> List&lt;String&gt; <span class="title">zkClientGetChildren</span><span class="params">(<span class="keyword">final</span> String parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!zkClient.exists(parent)) &#123;</span><br><span class="line">            zkClient.createPersistent(parent, <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> zkClient.getChildren(parent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构建缓存的路径</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">buildRealPath</span><span class="params">(<span class="keyword">final</span> String parent, <span class="keyword">final</span> String children)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> parent + <span class="string">"/"</span> + children;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存元数据</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cacheMetaData</span><span class="params">(<span class="keyword">final</span> MetaData metaData)</span> </span>&#123;</span><br><span class="line">        Optional.ofNullable(metaData).ifPresent(data -&gt; metaDataSubscribers.forEach(e -&gt; e.onSubscribe(metaData)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订阅元数据修改的监听器</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">subscribeMetaDataChanges</span><span class="params">(<span class="keyword">final</span> String realPath)</span> </span>&#123;</span><br><span class="line">        zkClient.subscribeDataChanges(realPath, <span class="keyword">new</span> IZkDataListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataChange</span><span class="params">(<span class="keyword">final</span> String dataPath, <span class="keyword">final</span> Object data)</span> </span>&#123;</span><br><span class="line">                cacheMetaData((MetaData) data);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@SneakyThrows</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleDataDeleted</span><span class="params">(<span class="keyword">final</span> String dataPath)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">final</span> String realPath = dataPath.substring(ZkPathConstants.META_DATA.length() + <span class="number">1</span>);</span><br><span class="line">                MetaData metaData = <span class="keyword">new</span> MetaData();</span><br><span class="line">                metaData.setPath(URLDecoder.decode(realPath, StandardCharsets.UTF_8.name()));</span><br><span class="line">                unCacheMetaData(metaData);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 相关数据类型下的子节点监听器，如果任意数据下的子节点发生变动就会收到数据同步缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">subscribeChildChanges</span><span class="params">(<span class="keyword">final</span> ConfigGroupEnum groupKey, <span class="keyword">final</span> String groupParentPath, <span class="keyword">final</span> List&lt;String&gt; childrenList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (groupKey) &#123;</span><br><span class="line">            ...</span><br><span class="line">            <span class="keyword">case</span> META_DATA:</span><br><span class="line">                zkClient.subscribeChildChanges(groupParentPath, (parentPath, currentChildren) -&gt; &#123;</span><br><span class="line">                    <span class="keyword">if</span> (CollectionUtils.isNotEmpty(currentChildren)) &#123;</span><br><span class="line">                        <span class="keyword">final</span> List&lt;String&gt; addSubscribePath = addSubscribePath(childrenList, currentChildren);</span><br><span class="line">                        addSubscribePath.stream().map(children -&gt; &#123;</span><br><span class="line">                            <span class="keyword">final</span> String realPath = buildRealPath(parentPath, children);</span><br><span class="line">                            cacheMetaData(zkClient.readData(realPath));</span><br><span class="line">                            <span class="keyword">return</span> realPath;</span><br><span class="line">                        &#125;).forEach(<span class="keyword">this</span>::subscribeMetaDataChanges);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Unexpected groupKey: "</span> + groupKey);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><p>整个zk同步策略的流程就结束了，到此soul中所有的数据同步方式的流程就都介绍了，整体来说，数据同步部分的设计确实很好，实现上做了高度统一，在数据同步的时候使用发布订阅模式，不同类型处理方式都基本相同，无论是代码阅读还是使用都很方便，而且内部的实现细节上面做了高度封装，基本没有什么冗余代码，只能说两个字，优雅。</p>
+
+      
+    </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-sofa插件使用/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" rel="prev" title>
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MzM2Ny8xOTkwOA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Zhoutzzz">
+            
+              <p class="site-author-name" itemprop="name">Zhoutzzz</p>
+              <p class="site-description motion-element" itemprop="description">一枚Java Coder的个人学习基地</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Zhoutzzz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="925920668@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读-zookeeper数据同步策略流程详解"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读-zookeeper数据同步策略流程详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#admin像zk发送数据"><span class="nav-number">1.2.</span> <span class="nav-text">admin像zk发送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#web更新缓存"><span class="nav-number">1.3.</span> <span class="nav-text">web更新缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结尾"><span class="nav-number">1.4.</span> <span class="nav-text">结尾</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhoutzzz</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+
+</div>
+<!-- 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+ -->
+
+
+  <span class="post-meta-divider">|</span>
+
+<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+
+<!-- 
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+ -->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

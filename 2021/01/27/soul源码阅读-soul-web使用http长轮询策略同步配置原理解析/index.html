@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析 简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Z">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析 简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611321720728-f1164b8d-b1b7-4fc8-b009-d619805e40c2.png">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611330594826-6808f987-e16b-416f-a9cc-d904763d3298.png">
+<meta property="og:updated_time" content="2021-01-27T04:49:46.574Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Z">
+<meta name="twitter:description" content="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析 简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/">
+
+
+
+
+
+  <title> | Z</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Z</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析"><a href="#soul源码阅读-soul-web使用http长轮询策略同步配置原理解析" class="headerlink" title="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析"></a>soul源码阅读-soul-web使用http长轮询策略同步配置原理解析</h1><ul>
+<li><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2></li>
+</ul>
+<ul>
+<li>在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。</li>
+<li>在官网的介绍里说了http长轮询的执行流程，web网关，会定时向admin发起数据同步的长轮询请求，而admin则在接受到请求后，使用servlet3.0的异步特性，先将请求放入一个阻塞队列ArrayBlockingQueue中保存，发生了数据变更时，会将队列中的所有任务出队依次处理并响应，如果超时，则将队列中的头部元素取出进行处理然后响应。</li>
+<li><p>既然是数据同步的策略，那具体的实现就应该在soul-sync-data-center中，http长轮询就应该对应soul-sync-data-http模块（soul的项目结构本身就设计的很好，并且命名规范，按照功能进行模块拆分，具体的功能点可以在对应的模块中找到，在加上阅读源码时的‘假设性原则’，定位到核心代码处更是分分钟的事情，再不济也能猜到入口，一步步debug）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png" alt="image.png"></p>
+<h2 id="soul-web长轮询初始化"><a href="#soul-web长轮询初始化" class="headerlink" title="soul-web长轮询初始化"></a>soul-web长轮询初始化</h2></li>
+<li><p>目录下的HttpSyncDataService，就是长轮询的发起点，refresh包中，则是对应的各个类型的数据具体的更新实现，在收到admin的响应后判断是否执行刷新。在HttpSyncDataService中，有一个属性证明了这就是长轮询同步的实现</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611321720728-f1164b8d-b1b7-4fc8-b009-d619805e40c2.png" alt="image.png"></p>
+</li>
+<li><p>默认http连接超时时间10s，下面是初始化相关的方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public HttpSyncDataService(final HttpConfig httpConfig, final PluginDataSubscriber pluginDataSubscriber,</span><br><span class="line">                               final List&lt;MetaDataSubscriber&gt; metaDataSubscribers, final List&lt;AuthDataSubscriber&gt; authDataSubscribers) &#123;</span><br><span class="line">        this.factory = new DataRefreshFactory(pluginDataSubscriber, metaDataSubscribers, authDataSubscribers);</span><br><span class="line">        this.httpConfig = httpConfig;</span><br><span class="line">        this.serverList = Lists.newArrayList(Splitter.on(&quot;,&quot;).split(httpConfig.getUrl()));</span><br><span class="line">        this.httpClient = createRestTemplate();</span><br><span class="line">        this.start();</span><br><span class="line">    &#125;</span><br><span class="line">    // 定义restTemplate</span><br><span class="line">    private RestTemplate createRestTemplate() &#123;</span><br><span class="line">        OkHttp3ClientHttpRequestFactory factory = new OkHttp3ClientHttpRequestFactory();</span><br><span class="line">      // 10s连接超时</span><br><span class="line">        factory.setConnectTimeout((int) this.connectionTimeout.toMillis());</span><br><span class="line">      // 90s读取超时</span><br><span class="line">        factory.setReadTimeout((int) HttpConstants.CLIENT_POLLING_READ_TIMEOUT);</span><br><span class="line">        return new RestTemplate(factory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private void start() &#123;</span><br><span class="line">        // It could be initialized multiple times, so you need to control that.</span><br><span class="line">      // 使用cas设置为true，表示需要进行一次同步</span><br><span class="line">        if (RUNNING.compareAndSet(false, true)) &#123;</span><br><span class="line">            // fetch all group configs. 先获取所有组的配置，更新缓存</span><br><span class="line">            this.fetchGroupConfig(ConfigGroupEnum.values());</span><br><span class="line">            int threadSize = serverList.size();</span><br><span class="line">          // 初始化执行长轮询任务的线程池</span><br><span class="line">            this.executor = new ThreadPoolExecutor(threadSize, threadSize, 60L, TimeUnit.SECONDS,</span><br><span class="line">                    new LinkedBlockingQueue&lt;&gt;(),</span><br><span class="line">                    SoulThreadFactory.create(&quot;http-long-polling&quot;, true));</span><br><span class="line">            // start long polling, each server creates a thread to listen for changes.</span><br><span class="line">          // 发起长轮询</span><br><span class="line">            this.serverList.forEach(server -&gt; this.executor.execute(new HttpLongPollingTask(server)));</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            log.info(&quot;soul http long polling was started, executor=[&#123;&#125;]&quot;, executor);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="定时请求任务"><a href="#定时请求任务" class="headerlink" title="定时请求任务"></a>定时请求任务</h2></li>
+<li><p>初始化方法里，参数设定完成后启动长轮询任务，具体执行就在HttpLongPollingTask中了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">class HttpLongPollingTask implements Runnable &#123;</span><br><span class="line"></span><br><span class="line">        private String server;</span><br><span class="line"></span><br><span class="line">        private final int retryTimes = 3;</span><br><span class="line"></span><br><span class="line">        HttpLongPollingTask(final String server) &#123;</span><br><span class="line">            this.server = server;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void run() &#123;</span><br><span class="line">          // 在初始化时启动的时候，就将状态设置为了true，无限循环调用，如果遇到异常，重试3次</span><br><span class="line">            while (RUNNING.get()) &#123;</span><br><span class="line">                for (int time = 1; time &lt;= retryTimes; time++) &#123;</span><br><span class="line">                    try &#123;</span><br><span class="line">                      // 发起长轮询请求</span><br><span class="line">                        doLongPolling(server);</span><br><span class="line">                    &#125; catch (Exception e) &#123;</span><br><span class="line">                        // print warnning log.</span><br><span class="line">                        if (time &lt; retryTimes) &#123;</span><br><span class="line">                            log.warn(&quot;Long polling failed, tried &#123;&#125; times, &#123;&#125; times left, will be suspended for a while! &#123;&#125;&quot;,</span><br><span class="line">                                    time, retryTimes - time, e.getMessage());</span><br><span class="line">                            ThreadUtils.sleep(TimeUnit.SECONDS, 5);</span><br><span class="line">                            continue;</span><br><span class="line">                        &#125;</span><br><span class="line">                        // print error, then suspended for a while.</span><br><span class="line">                        log.error(&quot;Long polling failed, try again after 5 minutes!&quot;, e);</span><br><span class="line">                        ThreadUtils.sleep(TimeUnit.MINUTES, 5);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            log.warn(&quot;Stop http long polling.&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">private void doLongPolling(final String server) &#123;</span><br><span class="line">        MultiValueMap&lt;String, String&gt; params = new LinkedMultiValueMap&lt;&gt;(8);</span><br><span class="line">  // 因为soul中每个类型的数据，都有对应的md5进行标识，使用md5与类型关联，如果md5发生变动，表示需要进行同步</span><br><span class="line">        for (ConfigGroupEnum group : ConfigGroupEnum.values()) &#123;</span><br><span class="line">            ConfigData&lt;?&gt; cacheConfig = factory.cacheConfigData(group);</span><br><span class="line">            String value = String.join(&quot;,&quot;, cacheConfig.getMd5(), String.valueOf(cacheConfig.getLastModifyTime()));</span><br><span class="line">            params.put(group.name(), Lists.newArrayList(value));</span><br><span class="line">        &#125;</span><br><span class="line">        HttpHeaders headers = new HttpHeaders();</span><br><span class="line">        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</span><br><span class="line">        HttpEntity httpEntity = new HttpEntity(params, headers);</span><br><span class="line">  </span><br><span class="line">            // 具体admin监听接口path</span><br><span class="line">        String listenerUrl = server + &quot;/configs/listener&quot;;</span><br><span class="line">        log.debug(&quot;request listener configs: [&#123;&#125;]&quot;, listenerUrl);</span><br><span class="line">        JsonArray groupJson = null;</span><br><span class="line">        try &#123;</span><br><span class="line">          </span><br><span class="line">          // 向admin发起请求，admin是延迟响应，不会立刻响应，不然task无限请求服务器顶不住的</span><br><span class="line">            String json = this.httpClient.postForEntity(listenerUrl, httpEntity, String.class).getBody();</span><br><span class="line">            log.debug(&quot;listener result: [&#123;&#125;]&quot;, json);</span><br><span class="line">            groupJson = GSON.fromJson(json, JsonObject.class).getAsJsonArray(&quot;data&quot;);</span><br><span class="line">        &#125; catch (RestClientException e) &#123;</span><br><span class="line">            String message = String.format(&quot;listener configs fail, server:[%s], %s&quot;, server, e.getMessage());</span><br><span class="line">            throw new SoulException(message, e);</span><br><span class="line">        &#125;</span><br><span class="line">        if (groupJson != null) &#123;</span><br><span class="line">            // fetch group configuration async.</span><br><span class="line">          //admin响应之后，根据返回的结果判断是否需要进行配置更新，配置更新是异步进行</span><br><span class="line">            ConfigGroupEnum[] changedGroups = GSON.fromJson(groupJson, ConfigGroupEnum[].class);</span><br><span class="line">            if (ArrayUtils.isNotEmpty(changedGroups)) &#123;</span><br><span class="line">                log.info(&quot;Group config changed: &#123;&#125;&quot;, Arrays.toString(changedGroups));</span><br><span class="line">                this.doFetchGroupConfig(server, changedGroups);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="配置更新"><a href="#配置更新" class="headerlink" title="配置更新"></a>配置更新</h2></li>
+<li><p>具体的配置更新方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">private void doFetchGroupConfig(final String server, final ConfigGroupEnum... groups) &#123;</span><br><span class="line">        StringBuilder params = new StringBuilder();</span><br><span class="line">        for (ConfigGroupEnum groupKey : groups) &#123;</span><br><span class="line">            params.append(&quot;groupKeys&quot;).append(&quot;=&quot;).append(groupKey.name()).append(&quot;&amp;&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">            // admin获取配置的path</span><br><span class="line">        String url = server + &quot;/configs/fetch?&quot; + StringUtils.removeEnd(params.toString(), &quot;&amp;&quot;);</span><br><span class="line">        log.info(&quot;request configs: [&#123;&#125;]&quot;, url);</span><br><span class="line">        String json = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            json = this.httpClient.getForObject(url, String.class);</span><br><span class="line">        &#125; catch (RestClientException e) &#123;</span><br><span class="line">            String message = String.format(&quot;fetch config fail from server[%s], %s&quot;, url, e.getMessage());</span><br><span class="line">            log.warn(message);</span><br><span class="line">            throw new SoulException(message, e);</span><br><span class="line">        &#125;</span><br><span class="line">        // update local cache</span><br><span class="line">        boolean updated = this.updateCacheWithJson(json);</span><br><span class="line">        if (updated) &#123;</span><br><span class="line">            log.info(&quot;get latest configs: [&#123;&#125;]&quot;, json);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">        // not updated. it is likely that the current config server has not been updated yet. wait a moment.</span><br><span class="line">  // 这里等待30s再次监听，不等待也可能导致一直向admin请求，耗空资源</span><br><span class="line">        log.info(&quot;The config of the server[&#123;&#125;] has not been updated or is out of date. Wait for 30s to listen for changes again.&quot;, server);</span><br><span class="line">        ThreadUtils.sleep(TimeUnit.SECONDS, 30);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * update local cache.</span><br><span class="line">     * @param json the response from config server.</span><br><span class="line">     * @return true: the local cache was updated. false: not updated.</span><br><span class="line">     */</span><br><span class="line">    private boolean updateCacheWithJson(final String json) &#123;</span><br><span class="line">        JsonObject jsonObject = GSON.fromJson(json, JsonObject.class);</span><br><span class="line">        JsonObject data = jsonObject.getAsJsonObject(&quot;data&quot;);</span><br><span class="line">        // if the config cache will be updated?</span><br><span class="line">        return factory.executor(data);</span><br><span class="line">    &#125;</span><br><span class="line">// 具体的executor</span><br><span class="line">public boolean executor(final JsonObject data) &#123;</span><br><span class="line">  设置默认值false，否则调用这个方法如果返回true，也会引发资源耗尽的问题</span><br><span class="line">        final boolean[] success = &#123;false&#125;;</span><br><span class="line">        ENUM_MAP.values().parallelStream().forEach(dataRefresh -&gt; success[0] = dataRefresh.refresh(data));</span><br><span class="line">        return success[0];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="soul-admin接收"><a href="#soul-admin接收" class="headerlink" title="soul-admin接收"></a>soul-admin接收</h2></li>
+<li><p>到这里，web的长轮询具体逻辑就完成了，接下来就是看请求发送到admin之后admin怎么处理了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * This Controller only when HttpLongPollingDataChangedListener exist, will take effect.</span><br><span class="line"> 这个controller只有当长轮询策略生效的时候才会加载。</span><br><span class="line"> *</span><br><span class="line"> * @author huangxiaofeng</span><br><span class="line"> * @author xiaoyu</span><br><span class="line"> */</span><br><span class="line">@ConditionalOnBean(HttpLongPollingDataChangedListener.class)</span><br><span class="line">@RestController</span><br><span class="line">@RequestMapping(&quot;/configs&quot;)</span><br><span class="line">@Slf4j</span><br><span class="line">public class ConfigController &#123;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>看看接口里面的2个方法,/fetch和/listener正好与前面代码中配置的路径对应上了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(&quot;/fetch&quot;)</span><br><span class="line">    public SoulAdminResult fetchConfigs(@NotNull final String[] groupKeys) &#123;</span><br><span class="line">        Map&lt;String, ConfigData&lt;?&gt;&gt; result = Maps.newHashMap();</span><br><span class="line">        for (String groupKey : groupKeys) &#123;</span><br><span class="line">            ConfigData&lt;?&gt; data = longPollingListener.fetchConfig(ConfigGroupEnum.valueOf(groupKey));</span><br><span class="line">            result.put(groupKey, data);</span><br><span class="line">        &#125;</span><br><span class="line">        return SoulAdminResult.success(SoulResultMessage.SUCCESS, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Listener.</span><br><span class="line">     *</span><br><span class="line">     * @param request  the request</span><br><span class="line">     * @param response the response</span><br><span class="line">     */</span><br><span class="line">    @PostMapping(value = &quot;/listener&quot;)</span><br><span class="line">    public void listener(final HttpServletRequest request, final HttpServletResponse response) &#123;</span><br><span class="line">        longPollingListener.doLongPolling(request, response);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="任务处理"><a href="#任务处理" class="headerlink" title="任务处理"></a>任务处理</h2></li>
+<li><p>我们看看对应的fetchConfig和doLongPolling方法具体内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">// If the configuration data changes, the group information for the change is immediately responded.</span><br><span class="line">    // Otherwise, the client&apos;s request thread is blocked until any data changes or the specified timeout is reached.</span><br><span class="line">    </span><br><span class="line">    //这个方法头上注解说明了，如果配置数据有更改，对应类型的信息会被立刻包装为response响应给web发起的http请求，否则客户端的请求线程会阻塞知道数据发生更改或者超时，源码内部将请求的超时时间设为60s，也就是说，如果我们在admin进行配置修改，会立马对web发出的长轮询作出响应，不然就这边等60s，这也就是web那根据atomicBoolean的状态不会无限请求的原因。</span><br><span class="line">public void doLongPolling(final HttpServletRequest request, final HttpServletResponse response) &#123;</span><br><span class="line"></span><br><span class="line">        // compare group md5 实际判断方式是比较类型的md5，只要有任意类型被修改了，这个list都不会为空，就会立刻响应</span><br><span class="line">        List&lt;ConfigGroupEnum&gt; changedGroup = compareChangedGroup(request);</span><br><span class="line">        String clientIp = getRemoteIp(request);</span><br><span class="line"></span><br><span class="line">        // response immediately.</span><br><span class="line">        if (CollectionUtils.isNotEmpty(changedGroup)) &#123;</span><br><span class="line">            this.generateResponse(response, changedGroup);</span><br><span class="line">            log.info(&quot;send response with the changed group, ip=&#123;&#125;, group=&#123;&#125;&quot;, clientIp, changedGroup);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        // listen for configuration changed. 使用异步方式进行监听</span><br><span class="line">        final AsyncContext asyncContext = request.startAsync();</span><br><span class="line"></span><br><span class="line">        // AsyncContext.settimeout() does not timeout properly, so you have to control it yourself</span><br><span class="line">        asyncContext.setTimeout(0L);</span><br><span class="line"></span><br><span class="line">        // block client&apos;s thread.</span><br><span class="line">        scheduler.execute(new LongPollingClient(asyncContext, clientIp, </span><br><span class="line">        // 具体的超时枚举</span><br><span class="line">        HttpConstants.SERVER_MAX_HOLD_TIMEOUT));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最终将web的请求，放入调度线程池异步执行，在分析@SoulSpringMvcClient注解注册流程的时候也提到过这个实现了runnable的任务类，具体的任务方法如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">  // 定义调度线程池调度执行时的具体方法，在调度线程池执行的时候，创建新的runnable来执行，将阻塞队列中的头部任务出队，然后比较数据，发送响应</span><br><span class="line">            this.asyncTimeoutFuture = scheduler.schedule(() -&gt; &#123;</span><br><span class="line">                clients.remove(LongPollingClient.this);</span><br><span class="line">                List&lt;ConfigGroupEnum&gt; changedGroups = compareChangedGroup((HttpServletRequest) asyncContext.getRequest());</span><br><span class="line">                sendResponse(changedGroups);</span><br><span class="line">            &#125;, timeoutTime, TimeUnit.MILLISECONDS);</span><br><span class="line">  // 直接将当前任务加入队列。</span><br><span class="line">            clients.add(this);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>LongPollingClient的run方法在发送响应的时候，会根据changedGroup来生成响应数据，如果这个changedGroup元素为0，生成的响应数据是“[{}]”，如果有数据，就会将对应数据解析为json响应，之前说doLongPolling方法的时候，就解释了对于响应的数据会做何种处理，如果不需要更新就重新发起90秒的任务，如果需要更新，这时候web就会去根据访问/listener接口得到的具体的group数据，调用/fetch获取对应的配置进行更新。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 根据枚举选择对应的group从缓存中拿出数据返回。</span><br><span class="line"></span><br><span class="line">public ConfigData&lt;?&gt; fetchConfig(final ConfigGroupEnum groupKey) &#123;</span><br><span class="line">        ConfigDataCache config = CACHE.get(groupKey.name());</span><br><span class="line">        switch (groupKey) &#123;</span><br><span class="line">            case APP_AUTH:</span><br><span class="line">                List&lt;AppAuthData&gt; appAuthList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;AppAuthData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), appAuthList);</span><br><span class="line">            case PLUGIN:</span><br><span class="line">                List&lt;PluginData&gt; pluginList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;PluginData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), pluginList);</span><br><span class="line">            case RULE:</span><br><span class="line">                List&lt;RuleData&gt; ruleList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;RuleData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), ruleList);</span><br><span class="line">            case SELECTOR:</span><br><span class="line">                List&lt;SelectorData&gt; selectorList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;SelectorData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), selectorList);</span><br><span class="line">            case META_DATA:</span><br><span class="line">                List&lt;MetaData&gt; metaList = GsonUtils.getGson().fromJson(config.getJson(), new TypeToken&lt;List&lt;MetaData&gt;&gt;() &#123;</span><br><span class="line">                &#125;.getType());</span><br><span class="line">                return new ConfigData&lt;&gt;(config.getMd5(), config.getLastModifyTime(), metaList);</span><br><span class="line">            default:</span><br><span class="line">                throw new IllegalStateException(&quot;Unexpected groupKey: &quot; + groupKey);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>感觉这怎么跟官网上面说的有点不太符合，数据发生变动，为什么就请求接口从缓存拿数据了，不是会把前面的任务队列中的任务全部出队然后处理并响应么。因为当web请求过来之后被保存到了队列中，配置在admin的控制台修改之后，会触发监听，而监听会根据具体的配置修改的类型将修改事件分发到不同的事件处理器中，在事件处理器中会更新admin的缓存数据，同时让任务队列执行DataChangeTask任务，在DataChangeTask中具体的方法如下，admin修改配置后具体的数据同步逻辑，在讲解@SoulSpringMvcClient的文章后半部分中已经说明。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public void run() &#123;</span><br><span class="line">  // 将队列中的任务循环取出后挨个发送它们对应的响应。</span><br><span class="line">            for (Iterator&lt;LongPollingClient&gt; iter = clients.iterator(); iter.hasNext();) &#123;</span><br><span class="line">                LongPollingClient client = iter.next();</span><br><span class="line">                iter.remove();</span><br><span class="line">                client.sendResponse(Collections.singletonList(groupKey));</span><br><span class="line">                log.info(&quot;send response with the changed group,ip=&#123;&#125;, group=&#123;&#125;, changeTime=&#123;&#125;&quot;, client.ip, groupKey, changeTime);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>到此这个http长轮询策略具体流程就和官方文章中介绍的一致了，最后画个图理一理它的整个同步流程<img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611330594826-6808f987-e16b-416f-a9cc-d904763d3298.png" alt="未命名文件.png"></p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-springCloud插件使用/" rel="prev" title>
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MzM2Ny8xOTkwOA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Zhoutzzz">
+            
+              <p class="site-author-name" itemprop="name">Zhoutzzz</p>
+              <p class="site-description motion-element" itemprop="description">一枚Java Coder的个人学习基地</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Zhoutzzz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="925920668@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读-soul-web使用http长轮询策略同步配置原理解析"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读-soul-web使用http长轮询策略同步配置原理解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#soul-web长轮询初始化"><span class="nav-number">1.2.</span> <span class="nav-text">soul-web长轮询初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定时请求任务"><span class="nav-number">1.3.</span> <span class="nav-text">定时请求任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置更新"><span class="nav-number">1.4.</span> <span class="nav-text">配置更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#soul-admin接收"><span class="nav-number">1.5.</span> <span class="nav-text">soul-admin接收</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务处理"><span class="nav-number">1.6.</span> <span class="nav-text">任务处理</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhoutzzz</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+
+</div>
+<!-- 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+ -->
+
+
+  <span class="post-meta-divider">|</span>
+
+<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+
+<!-- 
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+ -->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Z">
+<meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/index.html">
+<meta property="og:site_name" content="Z">
+<meta property="og:description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png">
+<meta property="og:updated_time" content="2021-01-27T04:49:46.546Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Z">
+<meta name="twitter:description" content="前言 在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下 123456graph LRadmin[admin启动向nacos中发送数据] --&amp;gt; nacos[nacos]web[web启动时从nacos中拿取数据更新本地缓存] --&amp;gt;nacos[nacos]nacos1[nacos中的数据发生更改,发送更改数据到web] --&amp;gt; web1[web]  因为目前版">
+<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/">
+
+
+
+
+
+  <title> | Z</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Z</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-nacos数据同步策略流程详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Zhoutzzz">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Z">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline"></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T12:49:46+08:00">
+                2021-01-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ul>
+<li><p>在soul新版本中添加了nacos的数据同步策略，大致的同步流程如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">admin[admin启动向nacos中发送数据] --&gt; nacos[nacos]</span><br><span class="line">web[web启动时从nacos中拿取数据更新本地缓存] --&gt;nacos[nacos]</span><br><span class="line"></span><br><span class="line">nacos1[nacos中的数据发生更改,发送更改数据到web] --&gt; web1[web]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>因为目前版本admin中的nacos数据同步，没有在启动时将数据同步到nacos中，所以目前来说，nacos数据同步方案在启动的时候需要手动进行同步，关于nacos同步策略的使用以及可能遇到的坑，可以参考<a href="https://juejin.cn/post/6921170233868845064" target="_blank" rel="noopener">Soul网关源码阅读（十六）Nacos数据同步示例运行</a></p>
+</li>
+</ul>
+<h2 id="Admin同步数据到Nacos"><a href="#Admin同步数据到Nacos" class="headerlink" title="Admin同步数据到Nacos"></a>Admin同步数据到Nacos</h2><ul>
+<li>首先,我们启动admin因为没有把数据同步到nacos，我们可以手动同步的同时观察admin同步数据到nacos的流程，结合前面的文章介绍，我们知道在admin中soul的数据同步是使用SpringEventPublisher将同步事件分发到DataChangedEventDispatcher监听器之后，再根据配置的同步策略和数据类型进行具体的同步处理</li>
+<li>实际进行处理的是NacosDataChangedListener，里面各个数据同步的具体方式基本一致，随便挑一个(AppAuth的数据修改)来做说明</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">// 更新appAuth的主体</span><br><span class="line">    public void onAppAuthChanged(final List&lt;AppAuthData&gt; changed, final DataEventTypeEnum eventType) &#123;</span><br><span class="line">      // 首先从nacos拿到配置数据，然后更新AuthMap缓存</span><br><span class="line">        updateAuthMap(getConfig(AUTH_DATA_ID));</span><br><span class="line">     // 根据eventType执行具体策略</span><br><span class="line">        switch (eventType) &#123;</span><br><span class="line">            case DELETE:</span><br><span class="line">                changed.forEach(appAuth -&gt; AUTH_MAP.remove(appAuth.getAppKey()));</span><br><span class="line">                break;</span><br><span class="line">            case REFRESH:</span><br><span class="line">            case MYSELF:</span><br><span class="line">                Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">                changed.forEach(appAuth -&gt; &#123;</span><br><span class="line">                    set.remove(appAuth.getAppKey());</span><br><span class="line">                    AUTH_MAP.put(appAuth.getAppKey(), appAuth);</span><br><span class="line">                &#125;);</span><br><span class="line">                AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">                break;</span><br><span class="line">            default:</span><br><span class="line">                changed.forEach(appAuth -&gt; AUTH_MAP.put(appAuth.getAppKey(), appAuth));</span><br><span class="line">                break;</span><br><span class="line">        &#125;</span><br><span class="line">        publishConfig(AUTH_DATA_ID, AUTH_MAP);</span><br><span class="line">    &#125;</span><br><span class="line">// 从nacos中获取配置</span><br><span class="line">private String getConfig(final String dataId) &#123;</span><br><span class="line">        String config = configService.getConfig(dataId, GROUP, 6000);</span><br><span class="line">        return StringUtils.hasLength(config) ? config : EMPTY_CONFIG_DEFAULT_VALUE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">// 更新缓存</span><br><span class="line">private void updateAuthMap(final String configInfo) &#123;</span><br><span class="line">        JsonObject jo = GsonUtils.getInstance().fromJson(configInfo, JsonObject.class);</span><br><span class="line">        Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">        for (Entry&lt;String, JsonElement&gt; e : jo.entrySet()) &#123;</span><br><span class="line">            set.remove(e.getKey());</span><br><span class="line">            AUTH_MAP.put(e.getKey(), GsonUtils.getInstance().fromJson(e.getValue(), AppAuthData.class));</span><br><span class="line">        &#125;</span><br><span class="line">        AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">// 将新的配置数据重新发布到nacos</span><br><span class="line">private void publishConfig(final String dataId, final Object data) &#123;</span><br><span class="line">        configService.publishConfig(dataId, GROUP, GsonUtils.getInstance().toJson(data));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><ul>
+<li>整体的发布流程就是这样：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line">ctrl[xxxController] --&gt; ser[xxxService]</span><br><span class="line">ser --&gt; pub[SpringEventPublish]</span><br><span class="line">pub --&gt; dispatch[DataChangedEventDispatcher]</span><br><span class="line">dispatch --&gt; listen[NacosDataChangedListener]</span><br><span class="line">listen --&gt; nacos[ConfigServer#publishConfig]</span><br></pre></td></tr></table></figure>
+<h2 id="Bootstrap从Nacos同步数据"><a href="#Bootstrap从Nacos同步数据" class="headerlink" title="Bootstrap从Nacos同步数据"></a>Bootstrap从Nacos同步数据</h2><ul>
+<li>在admin修改的数据被同步到nacos后，利用nacos的监听机制，nacos在发生数据变更，会向bootstrap发送修改的数据，接下来看看在bootstrap中，接收到nacos的数据后的具体处理流程，首先把bootstrap的同步配置改为nacos</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">soul: </span><br><span class="line">    sync: </span><br><span class="line">        nacos:</span><br><span class="line">            url: localhost:8848</span><br><span class="line">            namespace: 1c10d748-af86-43b9-8265-75f487d20c6c</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们把bootstrap的数据同步配置改为nacos之后，在bootstrap启动时，会注册一个nacos的监听，用于监听nacos发送的请求，而注册这个nacos监听的位置在NacosCacheHandler#watcherData之中，但是，实际上调用到这个方法，是在NacosSyncDataService里面调用，我们看下二者关系。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2021/png/2938489/1611488040505-5918ad4f-0a78-409f-8a33-63e8f11f270a.png" alt="image.png"></p>
+<ul>
+<li>NacosSyncDataService继承了NacosCacheHandler，而在NacosSyncDataService的start方法里是这么写的</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public void start() &#123;</span><br><span class="line">    watcherData(PLUGIN_DATA_ID, this::updatePluginMap);</span><br><span class="line">    watcherData(SELECTOR_DATA_ID, this::updateSelectorMap);</span><br><span class="line">    watcherData(RULE_DATA_ID, this::updateRuleMap);</span><br><span class="line">    watcherData(META_DATA_ID, this::updateMetaDataMap);</span><br><span class="line">    watcherData(AUTH_DATA_ID, this::updateAuthMap);</span><br><span class="line">  /*</span><br><span class="line">   watcherData(AUTH_DATA_ID, this::updateAuthMap);完整写法如下：</span><br><span class="line">   </span><br><span class="line">    watcherData(AUTH_DATA_ID, new OnChange() &#123;</span><br><span class="line">        void change(String changeData) &#123;</span><br><span class="line">        this.updateAuthMap();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在watcherData中就进行了nacos的Listener注册操作</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">protected void watcherData(final String dataId, final OnChange oc) &#123;</span><br><span class="line">  // 每当nacos有变动，就会触发这个Listener，而listener中receiveConfigInfo会实际执行我们之前实例化的匿名对象，最终执行对应的updatexxxMap方法</span><br><span class="line">        Listener listener = new Listener() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            public void receiveConfigInfo(final String configInfo) &#123;</span><br><span class="line">                oc.change(configInfo);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            @Override</span><br><span class="line">            public Executor getExecutor() &#123;</span><br><span class="line">                return null;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">  // 一开始启动的时候，nacos并没有数据变动，所以第一次要主动向nacos请求拿取数据进行同步</span><br><span class="line">        oc.change(getConfigAndSignListener(dataId, listener));</span><br><span class="line">        LISTENERS.getOrDefault(dataId, new ArrayList&lt;&gt;()).add(listener);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>等到有数据来了，执行对应的updatexxxMap方法，我们以updatePluginMap为例，看下具体实现</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">protected void updatePluginMap(final String configInfo) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">          // 实际上里面只做了一件事情，取消旧数据的订阅，在重新订阅当前数据</span><br><span class="line">            // Fix bug #656(https://github.com/dromara/soul/issues/656)</span><br><span class="line">            List&lt;PluginData&gt; pluginDataList = new ArrayList&lt;&gt;(GsonUtils.getInstance().toObjectMap(configInfo, PluginData.class).values());</span><br><span class="line">            pluginDataList.forEach(pluginData -&gt; Optional.ofNullable(pluginDataSubscriber).ifPresent(subscriber -&gt; &#123;</span><br><span class="line">                subscriber.unSubscribe(pluginData);</span><br><span class="line">                subscriber.onSubscribe(pluginData);</span><br><span class="line">            &#125;));</span><br><span class="line">        &#125; catch (JsonParseException e) &#123;</span><br><span class="line">            log.error(&quot;sync plugin data have error:&quot;, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这里面的关键点pluginDataSubscriber，其类型为PluginDataSubscriber。而这个PluginDataSubscriber的唯一实现则是CommonPluginDataSubscriber，所以实际上调用的是CommonPluginDataSubscriber#unSubscribe和CommonPluginDataSubscriber#onSubscribe方法，这个CommonPluginDataSubscriber，之前数据同步相关文章也提及过，在bootstrap进行数据处理的时候，这是公共的处理bootstrap内本地缓存的地方，<strong>根据不同的数据类型和不同的数据操作类型，选择具体的处理器进行对应缓存更新处理，而具体的处理器，都实现了PluginDataHandler接口，但是并没有重写PluginDataHandler中的所有方法，因此在具体的处理过程中也许会使用默认实现，具体要看数据类型所对应的处理器</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private &lt;T&gt; void subscribeDataHandler(final T classData, final DataEventTypeEnum dataType) &#123;</span><br><span class="line">        Optional.ofNullable(classData).ifPresent(data -&gt; &#123;</span><br><span class="line">          // 操作类型和数据类型判断</span><br><span class="line">            if (data instanceof PluginData) &#123;</span><br><span class="line">                PluginData pluginData = (PluginData) data;</span><br><span class="line">                if (dataType == DataEventTypeEnum.UPDATE) &#123;</span><br><span class="line">                  //更新本地缓存</span><br><span class="line">                    BaseDataCache.getInstance().cachePluginData(pluginData);</span><br><span class="line">                  // 更新具体的处理器进行处理。</span><br><span class="line">                  Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.handlerPlugin(pluginData));</span><br><span class="line">                &#125; else if (dataType == DataEventTypeEnum.DELETE) &#123;</span><br><span class="line">                    BaseDataCache.getInstance().removePluginData(pluginData);</span><br><span class="line">                    Optional.ofNullable(handlerMap.get(pluginData.getName())).ifPresent(handler -&gt; handler.removePlugin(pluginData));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          ......</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当此处数据处理完成之后，一次数据同步就完成了，再来看下bootstrap进行数据同步的流程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line">nacos[Nacos发送数据] --&gt; recv[bootstrap注册的监听Listener收到请求]</span><br><span class="line">recv --&gt; send[将数据发送给CommonPluginDataSubscriber]</span><br><span class="line">send --&gt; choose[在subscribeDataHandler方法根据对应数据类型和操作类型选择处理器]</span><br><span class="line">choose --&gt; finish[在处理器中更新缓存后,完成同步]</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>整个nacos的同步流程大致就介绍完成了，其中有个点比较费解，在NacosDataChangedListener中，将Auth修改的数据发送到nacos之前会执行这样的代码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void updateAuthMap(final String configInfo) &#123;</span><br><span class="line">        JsonObject jo = GsonUtils.getInstance().fromJson(configInfo, JsonObject.class);</span><br><span class="line">        Set&lt;String&gt; set = new HashSet&lt;&gt;(AUTH_MAP.keySet());</span><br><span class="line">        for (Entry&lt;String, JsonElement&gt; e : jo.entrySet()) &#123;</span><br><span class="line">            set.remove(e.getKey());</span><br><span class="line">            AUTH_MAP.put(e.getKey(), GsonUtils.getInstance().fromJson(e.getValue(), AppAuthData.class));</span><br><span class="line">        &#125;</span><br><span class="line">        AUTH_MAP.keySet().removeAll(set);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>不明白这样写的目的是什么，因为在执行这个更新操作之前，在admin修改了数据之后，controller到service只是先存入了数据库，然后调用Spring Publisher把数据发送到对应的listener进行修改，此时本地缓存和nacos中还是老的数据，如果要更新缓存和nacos，需要先执行上面的代码，但是上面代码的configInfo是从nacos中拿取的老数据，AUTH_MAP中也是老数据，两个老数据这样操作，不是等于没操作么？？？🤷‍♂️</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+    <div>
+      
+        <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soul-web使用websocket策略同步配置原理解析/" rel="next" title>
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" rel="prev" title>
+                 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC80MzM2Ny8xOTkwOA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="Zhoutzzz">
+            
+              <p class="site-author-name" itemprop="name">Zhoutzzz</p>
+              <p class="site-description motion-element" itemprop="description">一枚Java Coder的个人学习基地</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Zhoutzzz" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="925920668@qq.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Admin同步数据到Nacos"><span class="nav-number">2.</span> <span class="nav-text">Admin同步数据到Nacos</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bootstrap从Nacos同步数据"><span class="nav-number">3.</span> <span class="nav-text">Bootstrap从Nacos同步数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhoutzzz</span>
+
+  
+</div>
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+
+</div>
+<!-- 
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+ -->
+
+
+  <span class="post-meta-divider">|</span>
+
+<span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+
+<!-- 
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+ -->
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
