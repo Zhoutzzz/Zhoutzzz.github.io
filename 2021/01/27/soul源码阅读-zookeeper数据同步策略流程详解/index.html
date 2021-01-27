@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Z">
 <meta property="og:description" content="前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-01-27T05:13:57.394Z">
+<meta property="og:updated_time" content="2021-01-27T05:19:01.013Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="soul源码阅读-zookeeper数据同步策略流程详解">
 <meta name="twitter:description" content="前言 这次讲解soul中使用zookeeper网关同步数据的流程，照旧参考官方文档的说明。   依赖zookeeper的 watch 机制，soul-web会监听配置的节点，soul-admin在启动的时候，会将数据全量写入 zookeeper，后续数据发生变更时，会增量更新zookeeper的节点，与此同时，soul-web 会监听配置信息的节点，一旦有信息变更时，会更新本地缓存">
@@ -430,7 +430,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+            <a href="/tags/网关/" rel="tag"><i class="fa fa-tag"></i> 网关</a>
+          
+            <a href="/tags/soul/" rel="tag"><i class="fa fa-tag"></i> soul</a>
           
             <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
           
@@ -552,7 +554,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

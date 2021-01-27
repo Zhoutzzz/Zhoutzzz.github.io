@@ -1259,10 +1259,7 @@
 
       
         
-          <ul>
-<li><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2></li>
-</ul>
-<ul>
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ul>
 <li>在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。</li>
 <li>在官网的介绍里说了http长轮询的执行流程，web网关，会定时向admin发起数据同步的长轮询请求，而admin则在接受到请求后，使用servlet3.0的异步特性，先将请求放入一个阻塞队列ArrayBlockingQueue中保存，发生了数据变更时，会将队列中的所有任务出队依次处理并响应，如果超时，则将队列中的头部元素取出进行处理然后响应。</li>
 <li><p>既然是数据同步的策略，那具体的实现就应该在soul-sync-data-center中，http长轮询就应该对应soul-sync-data-http模块（soul的项目结构本身就设计的很好，并且命名规范，按照功能进行模块拆分，具体的功能点可以在对应的模块中找到，在加上阅读源码时的‘假设性原则’，定位到核心代码处更是分分钟的事情，再不济也能猜到入口，一步步debug）</p></li></ul>
@@ -2086,7 +2083,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

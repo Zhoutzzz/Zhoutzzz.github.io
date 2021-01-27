@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的">
+<meta name="description" content="简介 在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的执行流">
 <meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的">
+<meta property="og:description" content="简介 在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的执行流">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611321720728-f1164b8d-b1b7-4fc8-b009-d619805e40c2-20210127125700577.png">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611330594826-6808f987-e16b-416f-a9cc-d904763d3298-20210127125714815.png">
-<meta property="og:updated_time" content="2021-01-27T05:10:23.698Z">
+<meta property="og:updated_time" content="2021-01-27T05:19:06.335Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析">
-<meta name="twitter:description" content="简介   在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的">
+<meta name="twitter:description" content="简介 在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。 在官网的介绍里说了http长轮询的执行流">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Zhoutzzz/picgoture/1611320552588-c82f9048-4f15-4579-bb16-d0a9765e6e86-20210127123543859.png">
 
 
@@ -378,10 +378,7 @@
       
 
       
-        <ul>
-<li><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2></li>
-</ul>
-<ul>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><ul>
 <li>在参考soul官网研究soul的数据同步策略的时候发现，soul目前支持的数据同步策略有zk，websocket和http长轮询，而zk和websocke是主动push的策略，在admin进行配置修改的时候才会触发，长轮询作为pull策略，通过soul-web主动向admin发起数据同步策略，唯一的pull策略引发了兴趣，研究下soul如何实现的。</li>
 <li>在官网的介绍里说了http长轮询的执行流程，web网关，会定时向admin发起数据同步的长轮询请求，而admin则在接受到请求后，使用servlet3.0的异步特性，先将请求放入一个阻塞队列ArrayBlockingQueue中保存，发生了数据变更时，会将队列中的所有任务出队依次处理并响应，如果超时，则将队列中的头部元素取出进行处理然后响应。</li>
 <li><p>既然是数据同步的策略，那具体的实现就应该在soul-sync-data-center中，http长轮询就应该对应soul-sync-data-http模块（soul的项目结构本身就设计的很好，并且命名规范，按照功能进行模块拆分，具体的功能点可以在对应的模块中找到，在加上阅读源码时的‘假设性原则’，定位到核心代码处更是分分钟的事情，再不济也能猜到入口，一步步debug）</p>
@@ -453,7 +450,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/网关-soul/" rel="tag"><i class="fa fa-tag"></i> 网关,soul</a>
+            <a href="/tags/网关/" rel="tag"><i class="fa fa-tag"></i> 网关</a>
+          
+            <a href="/tags/soul/" rel="tag"><i class="fa fa-tag"></i> soul</a>
           
             <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
           
@@ -575,7 +574,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
