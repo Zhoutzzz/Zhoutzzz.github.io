@@ -1,7 +1,7 @@
 # Soul源码阅读-ApacheDubboPlugin插件解析
 
 - 本文介绍apache dubbo插件的具体实现，在看代码之前，介绍一下dubbo插件干的活，以及dubbo插件的关键数据结构，再具体看看doExecute方法实现
-
+<!--more-->
 - dubbo插件，主要作用是用来配合使用dubbo的项目，在使用dubbo协议进行调用时候，网关也可以拦截请求进行转发，相当于为了dubbo项目做了适配，而在dubbo里面，有一个元数据的概念，里面保存了使用dubbo进行rpc的时候，双方的接口信息，所以soul在实现dubbo协议的时候，也对其元数据做了适配，以此保证rpc的正确性。
 
   ```java
