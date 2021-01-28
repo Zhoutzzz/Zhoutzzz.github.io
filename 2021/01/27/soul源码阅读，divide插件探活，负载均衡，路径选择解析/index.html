@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java,网关,soul,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="Divide插件，作为soul进行http协议请求处理的核心插件，实际流程，插件提供的负载均衡，路径匹配，服务探活具体实现">
-<meta name="keywords" content="Java,网关,soul">
+<meta name="description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
 <meta property="og:type" content="article">
-<meta property="og:title" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析">
+<meta property="og:title" content="Z">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读，divide插件探活，负载均衡，路径选择解析/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="Divide插件，作为soul进行http协议请求处理的核心插件，实际流程，插件提供的负载均衡，路径匹配，服务探活具体实现">
+<meta property="og:description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-01-27T15:35:13.815Z">
+<meta property="og:updated_time" content="2021-01-28T12:18:19.867Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析">
-<meta name="twitter:description" content="Divide插件，作为soul进行http协议请求处理的核心插件，实际流程，插件提供的负载均衡，路径匹配，服务探活具体实现">
+<meta name="twitter:title" content="Z">
+<meta name="twitter:description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
 
 
 
@@ -126,7 +125,7 @@
 
 
 
-  <title>soul源码阅读，divide插件探活，负载均衡，路径选择解析 | Z</title>
+  <title> | Z</title>
   
 
 
@@ -280,7 +279,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">soul源码阅读，divide插件探活，负载均衡，路径选择解析</h1>
+          <h1 class="post-title" itemprop="name headline"></h1>
         
 
         <div class="post-meta">
@@ -292,7 +291,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:04:36+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T23:32:05+08:00">
                 2021-01-27
               </time>
             
@@ -302,50 +301,6 @@
             
           </span>
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网关/" itemprop="url" rel="index">
-                    <span itemprop="name">网关</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
-                    <span itemprop="name">soul</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index">
-                    <span itemprop="name">Java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
           
 
           
@@ -374,15 +329,19 @@
       
 
       
-        <ul>
-<li><p>Divide插件，作为soul进行http协议请求处理的核心插件，实际流程，插件提供的负载均衡，路径匹配，服务探活具体实现</p>
-<a id="more"></a>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Mono&lt;Void&gt; <span class="title">doExecute</span><span class="params">(<span class="keyword">final</span> ServerWebExchange exchange, <span class="keyword">final</span> SoulPluginChain chain, <span class="keyword">final</span> SelectorData selector, <span class="keyword">final</span> RuleData rule)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> SoulContext soulContext = exchange.getAttribute(Constants.CONTEXT);</span><br><span class="line">    <span class="keyword">assert</span> soulContext != <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> DivideRuleHandle ruleHandle = GsonUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  <span class="comment">//  确保请求的上游服务存在，里面会探活</span></span><br><span class="line">    <span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList = UpstreamCacheManager.getInstance().findUpstreamListBySelectorId(selector.getId());</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isEmpty(upstreamList)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide upstream configuration error： &#123;&#125;"</span>, rule.toString());</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> String ip = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();</span><br><span class="line">  <span class="comment">// 负载均衡，确定实际的上游后端服务地址</span></span><br><span class="line">    DivideUpstream divideUpstream = LoadBalanceUtils.selector(upstreamList, ruleHandle.getLoadBalance(), ip);</span><br><span class="line">    <span class="keyword">if</span> (Objects.isNull(divideUpstream)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide has no upstream"</span>);</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// set the http url</span></span><br><span class="line">    String domain = buildDomain(divideUpstream);</span><br><span class="line">    String realURL = buildRealURL(domain, soulContext, exchange);</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_URL, realURL);</span><br><span class="line">    <span class="comment">// set the http timeout</span></span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_TIME_OUT, ruleHandle.getTimeout());</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_RETRY, ruleHandle.getRetry());</span><br><span class="line">    <span class="keyword">return</span> chain.execute(exchange);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>UpstreamCacheManager</code>，divide插件的探活使用的具体实现，使用到这个缓存管理器的地方在<code>DividePluginDataHandler</code>中，处理插件数据的时候会去探活。</p>
-</li>
+        <h1 id="soul源码阅读，divide插件探活，负载均衡，路径选择解析"><a href="#soul源码阅读，divide插件探活，负载均衡，路径选择解析" class="headerlink" title="soul源码阅读，divide插件探活，负载均衡，路径选择解析"></a>soul源码阅读，divide插件探活，负载均衡，路径选择解析</h1><ul>
+<li>Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。</li>
 </ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">UpstreamCacheManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  初始化探活调度器</span><br><span class="line">        <span class="keyword">boolean</span> check = Boolean.parseBoolean(System.getProperty(<span class="string">"soul.upstream.check"</span>, <span class="string">"false"</span>));</span><br><span class="line">        <span class="keyword">if</span> (check) &#123;</span><br><span class="line">            <span class="keyword">new</span> ScheduledThreadPoolExecutor(<span class="number">1</span>, SoulThreadFactory.create(<span class="string">"scheduled-upstream-task"</span>, <span class="keyword">false</span>))</span><br><span class="line">                    .scheduleWithFixedDelay(<span class="keyword">this</span>::scheduled,</span><br><span class="line">                            <span class="number">30</span>, Integer.parseInt(System.getProperty(<span class="string">"soul.upstream.scheduledTime"</span>, <span class="string">"30"</span>)), TimeUnit.SECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 根据选择器，选择是否添加到上游服务缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">submit</span><span class="params">(<span class="keyword">final</span> SelectorData selectorData)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList = GsonUtils.getInstance().fromList(selectorData.getHandle(), DivideUpstream<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != upstreamList &amp;&amp; upstreamList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            UPSTREAM_MAP.put(selectorData.getId(), upstreamList);</span><br><span class="line">            UPSTREAM_MAP_TEMP.put(selectorData.getId(), upstreamList);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            UPSTREAM_MAP.remove(selectorData.getId());</span><br><span class="line">            UPSTREAM_MAP_TEMP.remove(selectorData.getId());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在进行调度的时候去检查服务是否可用</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduled</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (UPSTREAM_MAP.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            UPSTREAM_MAP.forEach((k, v) -&gt; &#123;</span><br><span class="line">                List&lt;DivideUpstream&gt; result = check(v);</span><br><span class="line">                <span class="keyword">if</span> (result.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    UPSTREAM_MAP_TEMP.put(k, result);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    UPSTREAM_MAP_TEMP.remove(k);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;DivideUpstream&gt; <span class="title">check</span><span class="params">(<span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList)</span> </span>&#123;</span><br><span class="line">        List&lt;DivideUpstream&gt; resultList = Lists.newArrayListWithCapacity(upstreamList.size());</span><br><span class="line">        <span class="keyword">for</span> (DivideUpstream divideUpstream : upstreamList) &#123;</span><br><span class="line">          <span class="comment">// 通过socket连接检查上游后端服务</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> pass = UpstreamCheckUtils.checkUrl(divideUpstream.getUpstreamUrl());</span><br><span class="line">            <span class="keyword">if</span> (pass) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!divideUpstream.isStatus()) &#123;</span><br><span class="line">                    divideUpstream.setTimestamp(System.currentTimeMillis());</span><br><span class="line">                    divideUpstream.setStatus(<span class="keyword">true</span>);</span><br><span class="line">                    log.info(<span class="string">"UpstreamCacheManager detect success the url: &#123;&#125;, host: &#123;&#125; "</span>, divideUpstream.getUpstreamUrl(), divideUpstream.getUpstreamHost());</span><br><span class="line">                &#125;</span><br><span class="line">                resultList.add(divideUpstream);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                divideUpstream.setStatus(<span class="keyword">false</span>);</span><br><span class="line">                log.error(<span class="string">"check the url=&#123;&#125; is fail "</span>, divideUpstream.getUpstreamUrl());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultList;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Mono&lt;Void&gt; <span class="title">doExecute</span><span class="params">(<span class="keyword">final</span> ServerWebExchange exchange, <span class="keyword">final</span> SoulPluginChain chain, <span class="keyword">final</span> SelectorData selector, <span class="keyword">final</span> RuleData rule)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> SoulContext soulContext = exchange.getAttribute(Constants.CONTEXT);</span><br><span class="line">    <span class="keyword">assert</span> soulContext != <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> DivideRuleHandle ruleHandle = GsonUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  <span class="comment">//  确保请求的上游服务存在</span></span><br><span class="line">    <span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList = UpstreamCacheManager.getInstance().findUpstreamListBySelectorId(selector.getId());</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isEmpty(upstreamList)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide upstream configuration error： &#123;&#125;"</span>, rule.toString());</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> String ip = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();</span><br><span class="line">  <span class="comment">// 负载均衡，确定实际的上游后端服务地址</span></span><br><span class="line">    DivideUpstream divideUpstream = LoadBalanceUtils.selector(upstreamList, ruleHandle.getLoadBalance(), ip);</span><br><span class="line">    <span class="keyword">if</span> (Objects.isNull(divideUpstream)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide has no upstream"</span>);</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// set the http url</span></span><br><span class="line">    String domain = buildDomain(divideUpstream);</span><br><span class="line">    String realURL = buildRealURL(domain, soulContext, exchange);</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_URL, realURL);</span><br><span class="line">    <span class="comment">// set the http timeout</span></span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_TIME_OUT, ruleHandle.getTimeout());</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_RETRY, ruleHandle.getRetry());</span><br><span class="line">    <span class="keyword">return</span> chain.execute(exchange);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>之前文章说了关于http请求，实际的执行请求转发插件是<code>webClientPlugin</code>，其他的比如divide，springCloud插件，都是对当前http请求进行加工处理，处理完成交给<code>webClientP lugin</code>发送。</li>
+<li><code>UpstreamCacheManager</code>是上游后端服务的缓存，divide插件处理过程中要确保此次请求的服务是存在的，才能保证后面的转发插件能正确转发请求到实际服务，因此就需要本地保存目前真实存在的后端服务，不影响性能的情况下还能确保请求转发的正确性，同时还需要发送心跳检查后端服务健康情况。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">UpstreamCacheManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 初始化探活调度器</span></span><br><span class="line">        <span class="keyword">boolean</span> check = Boolean.parseBoolean(System.getProperty(<span class="string">"soul.upstream.check"</span>, <span class="string">"false"</span>));</span><br><span class="line">        <span class="keyword">if</span> (check) &#123;</span><br><span class="line">            <span class="keyword">new</span> ScheduledThreadPoolExecutor(<span class="number">1</span>, SoulThreadFactory.create(<span class="string">"scheduled-upstream-task"</span>, <span class="keyword">false</span>))</span><br><span class="line">                    .scheduleWithFixedDelay(<span class="keyword">this</span>::scheduled,</span><br><span class="line">                            <span class="number">30</span>, Integer.parseInt(System.getProperty(<span class="string">"soul.upstream.scheduledTime"</span>, <span class="string">"30"</span>)), TimeUnit.SECONDS);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">// 根据选择器，选择是否添加到上游服务缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">submit</span><span class="params">(<span class="keyword">final</span> SelectorData selectorData)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList = GsonUtils.getInstance().fromList(selectorData.getHandle(), DivideUpstream<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != upstreamList &amp;&amp; upstreamList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            UPSTREAM_MAP.put(selectorData.getId(), upstreamList);</span><br><span class="line">            UPSTREAM_MAP_TEMP.put(selectorData.getId(), upstreamList);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            UPSTREAM_MAP.remove(selectorData.getId());</span><br><span class="line">            UPSTREAM_MAP_TEMP.remove(selectorData.getId());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在进行调度的时候去检查服务是否可用</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scheduled</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (UPSTREAM_MAP.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            UPSTREAM_MAP.forEach((k, v) -&gt; &#123;</span><br><span class="line">                List&lt;DivideUpstream&gt; result = check(v);</span><br><span class="line">                <span class="keyword">if</span> (result.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                    UPSTREAM_MAP_TEMP.put(k, result);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    UPSTREAM_MAP_TEMP.remove(k);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;DivideUpstream&gt; <span class="title">check</span><span class="params">(<span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList)</span> </span>&#123;</span><br><span class="line">        List&lt;DivideUpstream&gt; resultList = Lists.newArrayListWithCapacity(upstreamList.size());</span><br><span class="line">        <span class="keyword">for</span> (DivideUpstream divideUpstream : upstreamList) &#123;</span><br><span class="line">          <span class="comment">// 通过socket连接检查上游后端服务</span></span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> pass = UpstreamCheckUtils.checkUrl(divideUpstream.getUpstreamUrl());</span><br><span class="line">            <span class="keyword">if</span> (pass) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!divideUpstream.isStatus()) &#123;</span><br><span class="line">                    divideUpstream.setTimestamp(System.currentTimeMillis());</span><br><span class="line">                    divideUpstream.setStatus(<span class="keyword">true</span>);</span><br><span class="line">                    log.info(<span class="string">"UpstreamCacheManager detect success the url: &#123;&#125;, host: &#123;&#125; "</span>, divideUpstream.getUpstreamUrl(), divideUpstream.getUpstreamHost());</span><br><span class="line">                &#125;</span><br><span class="line">                resultList.add(divideUpstream);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                divideUpstream.setStatus(<span class="keyword">false</span>);</span><br><span class="line">                log.error(<span class="string">"check the url=&#123;&#125; is fail "</span>, divideUpstream.getUpstreamUrl());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultList;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个缓存管理器里面，有2个缓存，一个<code>UPSTREAM_MAP</code>，一个<code>UPSTREAM_MAP_TEMP</code>，后者是内部实时更新，对外提供健康服务地址的缓存，前者是作为一致性检查的缓存，在进行调度的时候，根据<code>UPSTREAM_MAP</code>的内容，会对<code>UPSTREAM_MAP_TEMP</code>进行更新，保证每次心跳检测时两个缓存内容一致。</li>
+<li>对缓存地址的添加则是在<code>DividePluginDataHandler</code>中操作的，当admin更新了后端服务地址时，通过发布订阅机制，本地的缓存会收到消息进行更新。</li>
+</ul>
 
       
     </div>
@@ -413,16 +372,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
-          
-            <a href="/tags/网关/" rel="tag"><i class="fa fa-tag"></i> 网关</a>
-          
-            <a href="/tags/soul/" rel="tag"><i class="fa fa-tag"></i> soul</a>
-          
-        </div>
-      
 
       
       
@@ -432,8 +381,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-soul-web使用http长轮询策略同步配置原理解析/" rel="next" title="soul源码阅读-soul-web使用http长轮询策略同步配置原理解析">
-                <i class="fa fa-chevron-left"></i> soul源码阅读-soul-web使用http长轮询策略同步配置原理解析
+              <a href="/2021/01/27/soul-dubbo例子使用/" rel="next" title="soul-dubbo例子使用">
+                <i class="fa fa-chevron-left"></i> soul-dubbo例子使用
               </a>
             
           </div>
@@ -442,8 +391,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/01/27/soul源码阅读-使用-SoulSpringMvcClient将接口注册到网关流程解析/" rel="prev" title="soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析">
-                soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/01/28/Soul源码阅读-ApacheDubboPlugin插件解析/" rel="prev" title>
+                 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -501,8 +450,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -519,7 +477,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -541,7 +499,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -580,6 +538,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读，divide插件探活，负载均衡，路径选择解析"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读，divide插件探活，负载均衡，路径选择解析</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
