@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="网关,soul,Java,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
+<meta name="description" content="Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected Mono&amp;lt;Void&amp;gt; doExecute(fina">
+<meta name="keywords" content="网关,soul,Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Z">
+<meta property="og:title" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析">
 <meta property="og:url" content="https://zhoutzzz.github.io/2021/01/27/soul源码阅读，divide插件探活，负载均衡，路径选择解析/index.html">
 <meta property="og:site_name" content="Z">
-<meta property="og:description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
+<meta property="og:description" content="Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected Mono&amp;lt;Void&amp;gt; doExecute(fina">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2021-01-28T12:18:19.867Z">
+<meta property="og:updated_time" content="2021-01-29T02:43:36.203Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Z">
-<meta name="twitter:description" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析 Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected">
+<meta name="twitter:title" content="soul源码阅读，divide插件探活，负载均衡，路径选择解析">
+<meta name="twitter:description" content="Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。  12345678910111213141516171819202122232425262728protected Mono&amp;lt;Void&amp;gt; doExecute(fina">
 
 
 
@@ -125,7 +126,7 @@
 
 
 
-  <title> | Z</title>
+  <title>soul源码阅读，divide插件探活，负载均衡，路径选择解析 | Z</title>
   
 
 
@@ -279,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">soul源码阅读，divide插件探活，负载均衡，路径选择解析</h1>
         
 
         <div class="post-meta">
@@ -291,7 +292,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T23:32:05+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-27T13:04:36+08:00">
                 2021-01-27
               </time>
             
@@ -301,6 +302,50 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/" itemprop="url" rel="index">
+                    <span itemprop="name">网关</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/网关/soul/" itemprop="url" rel="index">
+                    <span itemprop="name">soul</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -329,7 +374,7 @@
       
 
       
-        <h1 id="soul源码阅读，divide插件探活，负载均衡，路径选择解析"><a href="#soul源码阅读，divide插件探活，负载均衡，路径选择解析" class="headerlink" title="soul源码阅读，divide插件探活，负载均衡，路径选择解析"></a>soul源码阅读，divide插件探活，负载均衡，路径选择解析</h1><ul>
+        <ul>
 <li>Divide插件，作为soul进行http协议请求处理的核心插件，本文介绍divide具体工作流程，插件提供的负载均衡，服务探活具体实现，下面是插件的主体逻辑，网关在接收到客户端的请求时divide插件干的活全在这里。</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> Mono&lt;Void&gt; <span class="title">doExecute</span><span class="params">(<span class="keyword">final</span> ServerWebExchange exchange, <span class="keyword">final</span> SoulPluginChain chain, <span class="keyword">final</span> SelectorData selector, <span class="keyword">final</span> RuleData rule)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> SoulContext soulContext = exchange.getAttribute(Constants.CONTEXT);</span><br><span class="line">    <span class="keyword">assert</span> soulContext != <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> DivideRuleHandle ruleHandle = GsonUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">  <span class="comment">//  确保请求的上游服务存在</span></span><br><span class="line">    <span class="keyword">final</span> List&lt;DivideUpstream&gt; upstreamList = UpstreamCacheManager.getInstance().findUpstreamListBySelectorId(selector.getId());</span><br><span class="line">    <span class="keyword">if</span> (CollectionUtils.isEmpty(upstreamList)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide upstream configuration error： &#123;&#125;"</span>, rule.toString());</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">final</span> String ip = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();</span><br><span class="line">  <span class="comment">// 负载均衡，确定实际的上游后端服务地址</span></span><br><span class="line">    DivideUpstream divideUpstream = LoadBalanceUtils.selector(upstreamList, ruleHandle.getLoadBalance(), ip);</span><br><span class="line">    <span class="keyword">if</span> (Objects.isNull(divideUpstream)) &#123;</span><br><span class="line">        log.error(<span class="string">"divide has no upstream"</span>);</span><br><span class="line">        Object error = SoulResultWrap.error(SoulResultEnum.CANNOT_FIND_URL.getCode(), SoulResultEnum.CANNOT_FIND_URL.getMsg(), <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> WebFluxResultUtils.result(exchange, error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// set the http url</span></span><br><span class="line">    String domain = buildDomain(divideUpstream);</span><br><span class="line">    String realURL = buildRealURL(domain, soulContext, exchange);</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_URL, realURL);</span><br><span class="line">    <span class="comment">// set the http timeout</span></span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_TIME_OUT, ruleHandle.getTimeout());</span><br><span class="line">    exchange.getAttributes().put(Constants.HTTP_RETRY, ruleHandle.getRetry());</span><br><span class="line">    <span class="keyword">return</span> chain.execute(exchange);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -372,6 +417,16 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/网关/" rel="tag"><i class="fa fa-tag"></i> 网关</a>
+          
+            <a href="/tags/soul/" rel="tag"><i class="fa fa-tag"></i> soul</a>
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+        </div>
+      
 
       
       
@@ -381,8 +436,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/01/27/soul-dubbo例子使用/" rel="next" title="soul-dubbo例子使用">
-                <i class="fa fa-chevron-left"></i> soul-dubbo例子使用
+              <a href="/2021/01/27/soul源码阅读-使用-SoulSpringMvcClient将接口注册到网关流程解析/" rel="next" title="soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析">
+                <i class="fa fa-chevron-left"></i> soul源码阅读-使用@SoulSpringMvcClient将接口注册到网关流程解析
               </a>
             
           </div>
@@ -391,8 +446,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/01/28/Soul源码阅读-ApacheDubboPlugin插件解析/" rel="prev" title>
-                 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/01/27/soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析/" rel="prev" title="soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析">
+                soul源码阅读-soulSpringCloudExample调用失败的原因及插件解析 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -450,17 +505,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -538,22 +584,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#soul源码阅读，divide插件探活，负载均衡，路径选择解析"><span class="nav-number">1.</span> <span class="nav-text">soul源码阅读，divide插件探活，负载均衡，路径选择解析</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
