@@ -1,4 +1,14 @@
-# Soul源码阅读-ApacheDubboPlugin插件解析
+---
+title: Soul源码阅读-ApacheDubboPlugin插件解析
+date: 2021-01-27 13:03:54
+tags:
+- [网关]
+- [soul]
+- [Java]
+categories: 
+- [网关, soul]
+- [Java]
+---
 
 - 本文介绍apache dubbo插件的具体实现，在看代码之前，介绍一下dubbo插件干的活，以及dubbo插件的关键数据结构，再具体看看doExecute方法实现
 <!--more-->
