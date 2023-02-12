@@ -43,4 +43,3 @@ controller部分如果觉得同步的请求没返回不舒服可以新建一个�
 请求后的情况如图
 ![图片](webmagic初体验/爬虫8.png)
 ![图片](webmagic初体验/爬虫9.png)
-![图片](webmagic初体验/爬虫10.png)
