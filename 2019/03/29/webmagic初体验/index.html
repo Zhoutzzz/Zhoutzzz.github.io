@@ -370,7 +370,7 @@
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>目前使用下来，感觉还是比较简单的，没有什么太复杂的地方，（老实说这代码逻辑写的我自己都看着感觉不好，后续改进了），至于webmagic里其他的一些功能之后再尝试，先彻底摸清楚他的工作流程/原理，到时候使用其他高级功能才顺手（嘿嘿）。</p>
 <hr>
 <p><center><font size="6"><strong>2019/4/3更新</strong></font></center></p>
-<h1 id="实现pipeline接口完成数据持久化"><a href="#实现pipeline接口完成数据持久化" class="headerlink" title="实现pipeline接口完成数据持久化"></a>实现pipeline接口完成数据持久化</h1><p>使用pipeline来对爬取到的数据的持久化工作，我是用的spring data jpa，用mybatis的话需要在Dao进行注解配置，相对麻烦。这里是把实现的pipeline作为service来进行数据处理。<br>因为开了4个线程去进行抓取，不加锁会有线程安全问题，使用了lock来实现加锁。<br><img src="/2019/03/29/webmagic初体验/爬虫6.png" alt="图片"><br>controller部分如果觉得同步的请求没返回不舒服可以新建一个线程做成异步。<br><img src="/2019/03/29/webmagic初体验/爬虫7.png" alt="图片"><br>请求后的情况如图<br><img src="/2019/03/29/webmagic初体验/爬虫8.png" alt="图片"><br><img src="/2019/03/29/webmagic初体验/爬虫9.png" alt="图片"><br><img src="/2019/03/29/webmagic初体验/爬虫10.png" alt="图片"></p>
+<h1 id="实现pipeline接口完成数据持久化"><a href="#实现pipeline接口完成数据持久化" class="headerlink" title="实现pipeline接口完成数据持久化"></a>实现pipeline接口完成数据持久化</h1><p>使用pipeline来对爬取到的数据的持久化工作，我是用的spring data jpa，用mybatis的话需要在Dao进行注解配置，相对麻烦。这里是把实现的pipeline作为service来进行数据处理。<br>因为开了4个线程去进行抓取，不加锁会有线程安全问题，使用了lock来实现加锁。<br><img src="/2019/03/29/webmagic初体验/爬虫6.png" alt="图片"><br>controller部分如果觉得同步的请求没返回不舒服可以新建一个线程做成异步。<br><img src="/2019/03/29/webmagic初体验/爬虫7.png" alt="图片"><br>请求后的情况如图<br><img src="/2019/03/29/webmagic初体验/爬虫8.png" alt="图片"><br><img src="/2019/03/29/webmagic初体验/爬虫9.png" alt="图片"></p>
 
       
     </div>
